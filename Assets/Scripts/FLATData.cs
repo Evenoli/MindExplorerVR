@@ -24,14 +24,8 @@ public static class FLATData {
             EnvironmentVariableTarget.Process);
 #if UNITY_EDITOR_32
     var dllPath = Application.dataPath + "/Plugins";
-        + Path.DirectorySeparatorChar + "C:\\Users\\Oli\\Documents\\MindExplorerVR\\MindExplorerVR\\Assets\\"
-        + Path.DirectorySeparatorChar + "Plugins";
-       // + Path.DirectorySeparatorChar + "x32";
 #elif UNITY_EDITOR_64
         var dllPath = Application.dataPath + "/Plugins";
-        //+ Path.DirectorySeparatorChar + "C:\\Users\\Oli\\Documents\\MindExplorerVR\\MindExplorerVR\\Assets"
-        //+ Path.DirectorySeparatorChar + "Plugins";
-        //+ Path.DirectorySeparatorChar + "x64";
 #else // Player
     var dllPath = Application.dataPath
         + Path.DirectorySeparatorChar + "Plugins";
@@ -45,15 +39,18 @@ public static class FLATData {
 
     }
 
+
     [DllImport("FLATDLL2")]
-    private static extern int add(int a, int b);
+    private static extern bool InitFlatManager();
+
     [DllImport("FLATDLL2")]
     private static extern bool PerformQuery(ref IntPtr ptrResVerts, ref int resVertsLen, 
         float p0, float p1, float p2, float p3, float p4, float p5);
 
-    public static int TestAdd(int a, int b)
+    // Used to initialise the FlatManager object in the dll. Should be called before Query.
+    public static bool InitFlat()
     {
-        return add(a, b);
+        return InitFlatManager();
     }
 
     public static FlatRes Query(float p0, float p1, float p2, float p3, float p4, float p5)
