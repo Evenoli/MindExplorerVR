@@ -114,6 +114,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="MindExplorerVR.CSharp.Plugins.csproj">
+      <Project>{8D1E191B-B9FD-D5E9-E22D-3A0F6ACD6893}</Project>
+      <Name>MindExplorerVR.CSharp.Plugins</Name>
+    </ProjectReference>
     <ProjectReference Include="MindExplorerVR.CSharp.csproj">
       <Project>{82D87D6A-9B58-5001-A501-0409AA2580FB}</Project>
       <Name>MindExplorerVR.CSharp</Name>
@@ -121,13 +125,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\SteamVR\Editor\SteamVR_Editor.cs" />
+    <Compile Include="Assets\SteamVR\Editor\SteamVR_Preferences.cs" />
     <Compile Include="Assets\SteamVR\Editor\SteamVR_RenderModelEditor.cs" />
     <Compile Include="Assets\SteamVR\Editor\SteamVR_Settings.cs" />
     <Compile Include="Assets\SteamVR\Editor\SteamVR_SkyboxEditor.cs" />
     <Compile Include="Assets\SteamVR\Editor\SteamVR_Update.cs" />
+    <Compile Include="Assets\VRArcTeleporter\Editor\ArcTeleporterEditor.cs" />
+    <Compile Include="Assets\VRInteraction\Editor\VRInputEditor.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Basic Metal Texture Pack\readme.txt" />
     <None Include="Assets\Shaders\CortexShader.shader" />
+    <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\MobileBlur.shader" />
     <None Include="Assets\SteamVR\InteractionSystem\Core\Shaders\SeeThru.shader" />
     <None Include="Assets\SteamVR\InteractionSystem\Core\Shaders\Silhouette.shader" />
     <None Include="Assets\SteamVR\InteractionSystem\Hints\Shaders\ControllerButtonHints.shader" />
@@ -139,6 +148,8 @@
     <None Include="Assets\SteamVR\Resources\SteamVR_Fade.shader" />
     <None Include="Assets\SteamVR\Resources\SteamVR_SphericalProjection.shader" />
     <None Include="Assets\SteamVR\readme.txt" />
+    <None Include="Assets\VRArcTeleporter\Materials\ArcShader.shader" />
+    <None Include="Assets\VRArcTeleporter\readme.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>

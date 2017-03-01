@@ -75,8 +75,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="MindExplorerVR.CSharp.Plugins.csproj">
+      <Project>{8D1E191B-B9FD-D5E9-E22D-3A0F6ACD6893}</Project>
+      <Name>MindExplorerVR.CSharp.Plugins</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Assets\Scripts\CortexDrawer.cs" />
     <Compile Include="Assets\Scripts\FLATData.cs" />
+    <Compile Include="Assets\Scripts\FullMeshCreator.cs" />
+    <Compile Include="Assets\Scripts\ModelManipulator.cs" />
     <Compile Include="Assets\Scripts\TestInterface.cs" />
     <Compile Include="Assets\SteamVR\Extras\SteamVR_GazeTracker.cs" />
     <Compile Include="Assets\SteamVR\Extras\SteamVR_LaserPointer.cs" />
@@ -180,9 +188,13 @@
     <Compile Include="Assets\SteamVR\Scripts\SteamVR_TrackedObject.cs" />
     <Compile Include="Assets\SteamVR\Scripts\SteamVR_UpdatePoses.cs" />
     <Compile Include="Assets\SteamVR\Scripts\SteamVR_Utils.cs" />
+    <Compile Include="Assets\VRArcTeleporter\Scripts\ArcTeleporter.cs" />
+    <Compile Include="Assets\VRInteraction\Scripts\VRInput.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Basic Metal Texture Pack\readme.txt" />
     <None Include="Assets\Shaders\CortexShader.shader" />
+    <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\MobileBlur.shader" />
     <None Include="Assets\SteamVR\InteractionSystem\Core\Shaders\SeeThru.shader" />
     <None Include="Assets\SteamVR\InteractionSystem\Core\Shaders\Silhouette.shader" />
     <None Include="Assets\SteamVR\InteractionSystem\Hints\Shaders\ControllerButtonHints.shader" />
@@ -194,6 +206,8 @@
     <None Include="Assets\SteamVR\Resources\SteamVR_Fade.shader" />
     <None Include="Assets\SteamVR\Resources\SteamVR_SphericalProjection.shader" />
     <None Include="Assets\SteamVR\readme.txt" />
+    <None Include="Assets\VRArcTeleporter\Materials\ArcShader.shader" />
+    <None Include="Assets\VRArcTeleporter\readme.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>

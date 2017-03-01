@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2015
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MindExplorerVR.CSharp.Plugins", "MindExplorerVR.CSharp.Plugins.csproj", "{8D1E191B-B9FD-D5E9-E22D-3A0F6ACD6893}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MindExplorerVR.CSharp", "MindExplorerVR.CSharp.csproj", "{82D87D6A-9B58-5001-A501-0409AA2580FB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MindExplorerVR.CSharp.Editor", "MindExplorerVR.CSharp.Editor.csproj", "{F278429D-2D23-842D-994B-1D6ED8939A2C}"
@@ -11,6 +13,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8D1E191B-B9FD-D5E9-E22D-3A0F6ACD6893}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D1E191B-B9FD-D5E9-E22D-3A0F6ACD6893}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D1E191B-B9FD-D5E9-E22D-3A0F6ACD6893}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D1E191B-B9FD-D5E9-E22D-3A0F6ACD6893}.Release|Any CPU.Build.0 = Release|Any CPU
 		{82D87D6A-9B58-5001-A501-0409AA2580FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{82D87D6A-9B58-5001-A501-0409AA2580FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{82D87D6A-9B58-5001-A501-0409AA2580FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
