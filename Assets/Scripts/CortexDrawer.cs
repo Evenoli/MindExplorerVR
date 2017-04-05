@@ -10,7 +10,7 @@ using UnityEditor;
 public class CortexDrawer : MonoBehaviour {
 
     public GameObject m_MeshPartPrefab;
-    public GameObject m_CortexModelObj;
+    public GameObject m_MeshParts;
     public Vector3 m_ModelScale;
 
     private List<GameObject> m_MeshModelParts;
@@ -27,13 +27,20 @@ public class CortexDrawer : MonoBehaviour {
     private Vector3 m_curBottomQueryCorner;
     // center position of current query
     private Vector3 m_QueryCenter;
-    //model center
-    public Vector3 m_modelCenter;
+
+    //Default model position anmd scale
+    private Vector3 m_DefaultModelPos = new Vector3(0, 4, 0);
+    private Vector3 m_DefaultModelScale = new Vector3(0.006f, 0.006f, 0.006f);
 
     // Use this for initialization
     void Start () {
 
+        // Init mesh model list and add pre-loaded mesh parts to it
         m_MeshModelParts = new List<GameObject>();
+        for(int c = 0; c < m_MeshParts.transform.childCount; c++)
+        {
+            m_MeshModelParts.Add(m_MeshParts.transform.GetChild(c).gameObject);
+        }
 
 
         print("Initialising Flat manager...");
@@ -75,8 +82,6 @@ public class CortexDrawer : MonoBehaviour {
             m_MeshModelParts.Clear();
         }
 
-        m_modelCenter = new Vector3();
-
         print("Query done. Building Mesh...");
 
         // Put data into vector3 form
@@ -93,7 +98,7 @@ public class CortexDrawer : MonoBehaviour {
         if (vertexCount > 0)
         {
 
-            int numMeshesRequired = ((vertexCount / 3) / MAX_VERTECIS_PER_MESH) + 1;
+            int numMeshesRequired = (vertexCount / MAX_VERTECIS_PER_MESH) + 1;
 
             for (int i = 0; i < numMeshesRequired; i++)
             {
@@ -102,7 +107,7 @@ public class CortexDrawer : MonoBehaviour {
                 List<Vector2> UVs = new List<Vector2>();
                 List<int> triangles = new List<int>();
                 int startInd = i * MAX_VERTECIS_PER_MESH;
-                int endInd = Math.Min(startInd + MAX_VERTECIS_PER_MESH, vertexCount - 1);
+                int endInd = Math.Min(startInd + MAX_VERTECIS_PER_MESH, vertexCount);
                 Vector3[] vertices = cortexVertices.GetRange(startInd, endInd - startInd).ToArray();
                 mesh.vertices = vertices;
 
@@ -123,7 +128,7 @@ public class CortexDrawer : MonoBehaviour {
                 mesh.RecalculateNormals();
 
                 GameObject meshPart = Instantiate(m_MeshPartPrefab);
-                meshPart.transform.SetParent(transform);
+                meshPart.transform.SetParent(m_MeshParts.transform);
 
                 MeshFilter mf = meshPart.GetComponent<MeshFilter>();
                 if (mf)
@@ -132,29 +137,15 @@ public class CortexDrawer : MonoBehaviour {
                 }
 
                 m_MeshModelParts.Add(meshPart);
-                m_modelCenter += meshPart.GetComponent<Renderer>().bounds.center;
                 meshPart.transform.localPosition = new Vector3(0, 0, 0);
                 meshPart.transform.localScale = new Vector3(1, 1, 1);
             }
-
-            m_modelCenter /= numMeshesRequired;
         }
 
-        //Scale and center model
-        if (m_CortexModelObj && m_curModelSize.x > 0 && m_curModelSize.y > 0 && m_curModelSize.z > 0)
-        {
-            
-            Renderer rend = m_CortexModelObj.GetComponent<Renderer>();
-            float scale = Math.Min(m_ModelScale.x / m_curModelSize.x, Math.Min(m_ModelScale.y / m_curModelSize.y, m_ModelScale.z / m_curModelSize.z));
-            m_CortexModelObj.transform.localScale = new Vector3(1,1,1)* scale;
-
-            m_CortexModelObj.transform.localPosition = new Vector3(-m_modelCenter.x* scale, -m_curBottomQueryCorner.y * scale, -m_modelCenter.z* scale);
-            //m_CortexModelObj.transform.localPosition = new Vector3(
-             //   (m_curBottomQueryCorner.x - m_curUpperQueryCorner.x) * (m_ModelScale.x / m_curModelSize.x) / 2, 
-            //    -m_curBottomQueryCorner.y * m_ModelScale.y / m_curModelSize.y,
-            //    (m_curBottomQueryCorner.z - m_curUpperQueryCorner.z) * (m_ModelScale.z / m_curModelSize.z) / 2
-            //    );
-        }
+        //Reset model position/rotation/scale
+        transform.localScale = m_DefaultModelScale;
+        transform.localPosition = m_DefaultModelPos;
+        transform.localEulerAngles = new Vector3(0, 0, 0);
 
         print("Done");
     }

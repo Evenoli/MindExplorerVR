@@ -10,6 +10,11 @@ public class FullMeshCreator : MonoBehaviour {
     public GameObject m_FullModelPrefab;
     private const int MAX_VERTECIS_PER_MESH = 64998;
 
+    private float minX;
+    private float minZ;
+    private float maxX;
+    private float maxZ;
+
     // Use this for initialization
     void Start () {
 
@@ -17,7 +22,12 @@ public class FullMeshCreator : MonoBehaviour {
 
         FLATData.InitFlat();
         FLATData.FlatRes cortexData = FLATData.Query(0f, 0f, 0f, 3000f, 870f, 1500f);
+        //FLATData.FlatRes cortexData = FLATData.Query(0f, 0f, 0f, 300f, 100f, 200f);
         GameObject fullModel = new GameObject();
+
+        minX = minZ = Mathf.Infinity;
+        maxX = maxZ = 0;
+         
 
         // Put data into vector3 form
         List<Vector3> cortexVertices = new List<Vector3>();
@@ -25,15 +35,25 @@ public class FullMeshCreator : MonoBehaviour {
         {
             //Vector3 v = transform.TransformPoint(new Vector3(cortexData.coords[i], cortexData.coords[i + 1], cortexData.coords[i + 2]));
             Vector3 v = new Vector3(cortexData.coords[i], cortexData.coords[i + 1], cortexData.coords[i + 2]);
+            if (v.x < minX)
+                minX = v.x;
+            if (v.z < minZ)
+                minZ = v.z;
+            if (v.x > maxX)
+                maxX = v.x;
+            if (v.z > maxZ)
+                maxZ = v.z;
+
             cortexVertices.Add(v);
         }
 
         int vertexCount = cortexVertices.Count;
-
+        
+        int counter = 0;
         if (vertexCount > 0)
         {
 
-            int numMeshesRequired = ((vertexCount / 3) / MAX_VERTECIS_PER_MESH) + 1;
+            int numMeshesRequired = (vertexCount / MAX_VERTECIS_PER_MESH) + 1;
 
             for (int i = 0; i < numMeshesRequired; i++)
             {
@@ -42,7 +62,8 @@ public class FullMeshCreator : MonoBehaviour {
                 List<Vector2> UVs = new List<Vector2>();
                 List<int> triangles = new List<int>();
                 int startInd = i * MAX_VERTECIS_PER_MESH;
-                int endInd = Math.Min(startInd + MAX_VERTECIS_PER_MESH, vertexCount - 1);
+                int endInd = Math.Min(startInd + MAX_VERTECIS_PER_MESH, vertexCount);
+                counter += endInd - startInd;
                 Vector3[] vertices = cortexVertices.GetRange(startInd, endInd - startInd).ToArray();
                 mesh.vertices = vertices;
 
@@ -80,6 +101,14 @@ public class FullMeshCreator : MonoBehaviour {
             UnityEditor.AssetDatabase.SaveAssets();
             PrefabUtility.ReplacePrefab(fullModel, m_FullModelPrefab, ReplacePrefabOptions.ConnectToPrefab);
             print("Done");
+
+            print("vertex count: " + vertexCount.ToString());
+            //print("counter: " + counter.ToString());
+            
+            //print("Min x: " + minX.ToString());
+            //print("Min z: " + minZ.ToString());
+            //print("Max x: " + maxX.ToString());
+            //print("Max z: " + maxZ.ToString());
         }
 
 
