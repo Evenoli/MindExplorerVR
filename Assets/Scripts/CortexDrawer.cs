@@ -11,7 +11,10 @@ public class CortexDrawer : MonoBehaviour {
 
     public GameObject m_MeshPartPrefab;
     public GameObject m_MeshParts;
-    public Vector3 m_ModelScale;
+    public GameObject m_defaultMeshParts;
+    public GameObject m_QueryBox;
+    public Flash m_queryBoxFlash;
+    public NewtonVR.NVRButton m_ResetButton;
 
     private List<GameObject> m_MeshModelParts;
     private const int MAX_VERTECIS_PER_MESH = 64998; // Multiple of 3 to keep triangles in order
@@ -25,12 +28,20 @@ public class CortexDrawer : MonoBehaviour {
     private Vector3 m_curModelSize;
     // Lower corner position of current query
     private Vector3 m_curBottomQueryCorner;
+    // Upper corner position of current query
+    private Vector3 m_curUpperQueryCorner;
     // center position of current query
     private Vector3 m_QueryCenter;
+    // Bool tracking if a query is currently in progress
+    private bool m_queryInProgress;
 
-    //Default model position anmd scale
-    private Vector3 m_DefaultModelPos = new Vector3(0, 4, 0);
-    private Vector3 m_DefaultModelScale = new Vector3(0.006f, 0.006f, 0.006f);
+
+    //Default model position and scale
+    private Vector3 m_DefaultModelPos;
+    private Vector3 m_DefaultModelScale;
+    private Quaternion m_DefaultModelRotation;
+    private float m_defaultNewQueryScale = 1000;
+
 
     // Use this for initialization
     void Start () {
@@ -49,18 +60,77 @@ public class CortexDrawer : MonoBehaviour {
         {
             print("Flat Object failed to initialise!");
             return;
-        } 
-       
+        }
+
+        m_queryInProgress = false;
+
+        // Set default query center coords
+        m_QueryCenter = new Vector3(875f, 435f, 875f);
+
+        m_DefaultModelPos = transform.localPosition;
+        m_DefaultModelScale = transform.localScale;
+        m_DefaultModelRotation = transform.localRotation;
+    }
+
+    //Resets model to startup state
+    public void Reset()
+    {
+        print("Reseting Model");
+        transform.localPosition = m_DefaultModelPos;
+        transform.localRotation = m_DefaultModelRotation;
+        transform.localScale = m_DefaultModelScale;
+
+        print("Destroying old mesh..");
+        foreach (GameObject mesh in m_MeshModelParts)
+        {
+            Destroy(mesh);
+        }
+        m_MeshModelParts.Clear();
+
+        int numChildren = m_defaultMeshParts.transform.childCount;
+
+        for(int i = 0; i < numChildren; i++)
+        {
+            GameObject Prefabmesh = m_defaultMeshParts.transform.GetChild(i).gameObject;
+            GameObject mesh = Instantiate(Prefabmesh);
+            mesh.transform.SetParent(m_MeshParts.transform);
+            mesh.transform.localScale = new Vector3(1, 1, 1);
+            mesh.transform.localPosition = Vector3.zero;
+            mesh.transform.localEulerAngles = Vector3.zero;
+            m_MeshModelParts.Add(mesh);
+        }
+
+        // Set default query center coords
+        m_QueryCenter = new Vector3(875f, 435f, 875f);
+        m_MeshParts.transform.localPosition = -1 * m_QueryCenter;
+        
+    }
+
+    public Vector3 GetQueryCenter()
+    {
+        return m_QueryCenter;
     }
 
     public void DrawNewQuery(float p0, float p1, float p2, float p3, float p4, float p5)
     {
-        print("performing Query...");
-        m_curModelSize = new Vector3(Math.Abs(p3 - p0), Math.Abs(p4 - p1), Math.Abs(p5 - p2));
-        m_curBottomQueryCorner = new Vector3(p0, p1, p2);
-        m_QueryCenter = (new Vector3(p3, p4, p5) + m_curBottomQueryCorner) / 2;
-        m_queryThread = new Thread(() => QueryThread(p0, p1, p2, p3, p4, p5));
-        m_queryThread.Start();
+        if (!m_queryInProgress)
+        {
+            print("performing Query...");
+            m_queryBoxFlash.SetFlashActive(true);
+            m_queryInProgress = true;
+            m_curModelSize = new Vector3(Math.Abs(p3 - p0), Math.Abs(p4 - p1), Math.Abs(p5 - p2));
+            m_curBottomQueryCorner = new Vector3(p0, p1, p2);
+            m_curUpperQueryCorner = new Vector3(p3, p4, p5);
+            print("Query lower: " + m_curBottomQueryCorner.ToString());
+            print("Query Top: " + m_curUpperQueryCorner.ToString());
+            m_QueryCenter = (m_curUpperQueryCorner + m_curBottomQueryCorner) / 2;
+            m_queryThread = new Thread(() => QueryThread(p0, p1, p2, p3, p4, p5));
+            m_queryThread.Start();
+        }
+        else
+        {
+            print("Query already in progress!!");
+        }
     }
 
     private void QueryThread(float p0, float p1, float p2, float p3, float p4, float p5)
@@ -84,14 +154,34 @@ public class CortexDrawer : MonoBehaviour {
 
         print("Query done. Building Mesh...");
 
+        //Reset model position/rotation/scale
+        transform.localPosition = m_DefaultModelPos;
+        transform.localRotation = m_DefaultModelRotation;
+        float newQueryBoxScale = m_QueryBox.transform.localScale.x; // x,y,z all same
+        float newScale = m_defaultNewQueryScale / newQueryBoxScale;
+        transform.localScale = newScale * m_DefaultModelScale;
+
+        Vector3 min = new Vector3(Mathf.Infinity, Mathf.Infinity, Mathf.Infinity);
+        Vector3 max = new Vector3(0, 0, 0);
+
         // Put data into vector3 form
         List<Vector3> cortexVertices = new List<Vector3>();
         for (int i = 0; i < cortexData.numcoords; i += 3)
         {
-            //Vector3 v = transform.TransformPoint(new Vector3(cortexData.coords[i], cortexData.coords[i + 1], cortexData.coords[i + 2]));
-            Vector3 v = new Vector3(cortexData.coords[i], cortexData.coords[i + 1], cortexData.coords[i + 2]) - m_QueryCenter;
+            Vector3 v = new Vector3(cortexData.coords[i], cortexData.coords[i + 1], cortexData.coords[i + 2]);
+            min.x = Mathf.Min(v.x, min.x);
+            min.y = Mathf.Min(v.y, min.y);
+            min.z = Mathf.Min(v.z, min.z);
+
+            max.x = Mathf.Max(v.x,  max.x);
+            max.y = Mathf.Max(v.y, max.y);
+            max.z = Mathf.Max(v.z, max.z);
+            //Vector3 v = new Vector3(cortexData.coords[i], cortexData.coords[i + 1], cortexData.coords[i + 2]) * transform.localScale.x;
             cortexVertices.Add(v);
         }
+
+        //print("Min: " + min.ToString());
+        //print("Max: " + max.ToString());
 
         int vertexCount = cortexVertices.Count;
 
@@ -142,11 +232,14 @@ public class CortexDrawer : MonoBehaviour {
             }
         }
 
-        //Reset model position/rotation/scale
-        transform.localScale = m_DefaultModelScale;
-        transform.localPosition = m_DefaultModelPos;
-        transform.localEulerAngles = new Vector3(0, 0, 0);
+        m_MeshParts.transform.localPosition = -1 * m_QueryCenter;
+        m_QueryBox.transform.localPosition = Vector3.zero;
+        ControlModeManager cmm = GetComponent<ControlModeManager>();
+        if(cmm)
+            cmm.SetControlMode(ControlModeManager.CONTROL_MODE.EXPLORE);
 
+        m_queryInProgress = false;
+        m_queryBoxFlash.SetFlashActive(false);
         print("Done");
     }
 
