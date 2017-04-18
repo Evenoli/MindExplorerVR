@@ -14,8 +14,17 @@ public class ModelManipulator : MonoBehaviour {
     public float m_scaleFactor;
     public float m_moveFactor;
 
+    // Set 0 for no max scale
+    public Vector3 m_maxScale;
+
+    public bool m_allowRotation;
+    public CortexDrawer m_drawer;
+    // WHich control mode allows for this manipulation
+    public ControlModeManager.CONTROL_MODE m_activeMode;
+    public ControlModeManager m_controlManager;
+
     private enum SIDE {LEFT, RIGHT };
-    private bool m_RotateModeActive;
+    private bool m_MoveModeActive;
     private SIDE m_rotatingHand;
     private Quaternion m_startingModelRotation;
     private Quaternion m_startingControllerRotation;
@@ -83,7 +92,7 @@ public class ModelManipulator : MonoBehaviour {
         if (gripped)
         {
             //Other hand is already rotating. switch to scale
-            if (m_RotateModeActive)
+            if (m_MoveModeActive)
             {
                 InitScaleMode();
             }
@@ -106,16 +115,16 @@ public class ModelManipulator : MonoBehaviour {
                 InitRotateMode((SIDE)Math.Abs((int)side - 1));
             }
             // Stop rotating
-            else if(m_RotateModeActive && m_rotatingHand==side)
+            else if(m_MoveModeActive && m_rotatingHand==side)
             {
-                m_RotateModeActive = false;
+                m_MoveModeActive = false;
             }
         }
     }
 
     private void InitScaleMode()
     {
-        m_RotateModeActive = false;
+        m_MoveModeActive = false;
         m_ScaleModeActive = true;
 
         Vector3 leftPos = m_LeftController.transform.localPosition;
@@ -126,7 +135,7 @@ public class ModelManipulator : MonoBehaviour {
 
     private void InitRotateMode(SIDE side)
     {
-        m_RotateModeActive = true;
+        m_MoveModeActive = true;
         m_ScaleModeActive = false;
 
         m_startingModelRotation = transform.localRotation;
@@ -147,32 +156,48 @@ public class ModelManipulator : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-		if(m_RotateModeActive)
+
+        // If we're in wrong control mode, return
+        if (m_controlManager.GetCurrentControlMode() != m_activeMode)
+            return;
+
+        // We're in move/rotate mode
+		if(m_MoveModeActive)
         {
             Quaternion curContrRot;
             Vector3 curContrPos;
-            bool moveEnabled = false;
+            bool rotateEnabled = false;
             if (m_rotatingHand == SIDE.LEFT)
             {
                 curContrRot = m_LeftController.transform.localRotation;
                 curContrPos = m_LeftController.transform.localPosition;
-                moveEnabled = m_LeftTrackedContr.triggerPressed;
+                rotateEnabled = m_LeftTrackedContr.triggerPressed;
             }
             else
             {
                 curContrRot = m_RightController.transform.localRotation;
                 curContrPos = m_RightController.transform.localPosition;
-                moveEnabled = m_RightTrackedContr.triggerPressed;
+                rotateEnabled = m_RightTrackedContr.triggerPressed;
             }
 
             Quaternion rotationDiff = Quaternion.Inverse(m_startingControllerRotation) * curContrRot;
             Vector3 posDiff = curContrPos - m_startingControllerPos;
 
-            if(moveEnabled)
-                transform.localPosition = m_startingModelPos + posDiff * m_moveFactor;
+            if (rotateEnabled && m_allowRotation)
+            {
+                //Vector3 eulerRot = (m_startingModelRotation * rotationDiff).eulerAngles;
+                //Vector3 queryCenter = m_drawer.GetQueryCenter();
+                //transform.RotateAround(queryCenter, new Vector3(1, 0, 0), eulerRot.x);
+                //transform.RotateAround(queryCenter, new Vector3(0, 1, 0), eulerRot.y);
+                //transform.RotateAround(queryCenter, new Vector3(0, 0, 1), eulerRot.z);
+                transform.rotation = m_startingModelRotation * rotationDiff;
+            }
             else
-                transform.localRotation = m_startingModelRotation * rotationDiff;
+                transform.localPosition = m_startingModelPos + posDiff * m_moveFactor;
+            
         }
+
+        // Scale mode
         else if(m_ScaleModeActive)
         {
             Vector3 curLeftPos = m_LeftController.transform.localPosition;
@@ -180,7 +205,15 @@ public class ModelManipulator : MonoBehaviour {
             float curContrDist = Vector3.Distance(curLeftPos, curRightPos);
 
             float scale = (curContrDist / m_startingDist) * m_scaleFactor;
-            transform.localScale = m_startingScale * scale;
+            if(m_maxScale != Vector3.zero)
+            {
+                transform.localScale = Vector3.Min(m_startingScale * scale, m_maxScale);
+            }
+            else
+            {
+                transform.localScale = m_startingScale * scale;
+            }
+            
         }
 	}
 }
