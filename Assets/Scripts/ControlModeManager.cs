@@ -13,6 +13,8 @@ public class ControlModeManager : MonoBehaviour {
     public GameObject m_RightController;
     private SteamVR_TrackedController m_RightTrackedContr;
 
+    public Display m_ScreenDisplay;
+
     // Use this for initialization
     void Start () {
         // Default control mode
@@ -51,6 +53,11 @@ public class ControlModeManager : MonoBehaviour {
     private void ToggleMode()
     {
         m_curControlMode = (CONTROL_MODE)(((int)m_curControlMode + 1) % 2);
+
+        if (m_curControlMode == CONTROL_MODE.EXPLORE)
+            m_ScreenDisplay.SetExploreMode();
+        else if (m_curControlMode == CONTROL_MODE.QUERY)
+            m_ScreenDisplay.SetQueryMode();
     }
 
     public CONTROL_MODE GetCurrentControlMode()
@@ -61,6 +68,11 @@ public class ControlModeManager : MonoBehaviour {
     public void SetControlMode(CONTROL_MODE mode)
     {
         m_curControlMode = mode;
+
+        if (m_curControlMode == CONTROL_MODE.EXPLORE)
+            m_ScreenDisplay.SetExploreMode();
+        else if (m_curControlMode == CONTROL_MODE.QUERY)
+            m_ScreenDisplay.SetQueryMode();
     }
        
 }

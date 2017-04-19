@@ -15,6 +15,7 @@ public class CortexDrawer : MonoBehaviour {
     public GameObject m_QueryBox;
     public Flash m_queryBoxFlash;
     public NewtonVR.NVRButton m_ResetButton;
+    public Display m_ScreenDisplay;
 
     private List<GameObject> m_MeshModelParts;
     private const int MAX_VERTECIS_PER_MESH = 64998; // Multiple of 3 to keep triangles in order
@@ -75,6 +76,9 @@ public class CortexDrawer : MonoBehaviour {
     //Resets model to startup state
     public void Reset()
     {
+        if (m_queryInProgress)
+            return;
+
         print("Reseting Model");
         transform.localPosition = m_DefaultModelPos;
         transform.localRotation = m_DefaultModelRotation;
@@ -117,6 +121,7 @@ public class CortexDrawer : MonoBehaviour {
         {
             print("performing Query...");
             m_queryBoxFlash.SetFlashActive(true);
+            m_ScreenDisplay.ShowQueryLoading(true);
             m_queryInProgress = true;
             m_curModelSize = new Vector3(Math.Abs(p3 - p0), Math.Abs(p4 - p1), Math.Abs(p5 - p2));
             m_curBottomQueryCorner = new Vector3(p0, p1, p2);
@@ -240,6 +245,7 @@ public class CortexDrawer : MonoBehaviour {
 
         m_queryInProgress = false;
         m_queryBoxFlash.SetFlashActive(false);
+        m_ScreenDisplay.ShowQueryLoading(false);
         print("Done");
     }
 
