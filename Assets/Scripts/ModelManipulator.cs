@@ -17,6 +17,7 @@ public class ModelManipulator : MonoBehaviour {
     // Set 0 for no max scale
     public Vector3 m_maxScale;
 
+    public bool m_AutoSetMoveScale;
     public bool m_allowRotation;
     public CortexDrawer m_drawer;
     // WHich control mode allows for this manipulation
@@ -193,7 +194,16 @@ public class ModelManipulator : MonoBehaviour {
                 transform.rotation = m_startingModelRotation * rotationDiff;
             }
             else
+            {
+                if(m_AutoSetMoveScale)
+                {
+                    float modelScale = transform.parent.localScale.x;
+                    m_moveFactor = GetMoveScale(modelScale);
+
+                }
                 transform.localPosition = m_startingModelPos + posDiff * m_moveFactor;
+
+            }
             
         }
 
@@ -216,4 +226,10 @@ public class ModelManipulator : MonoBehaviour {
             
         }
 	}
+
+    // Predicts a good move scale for QueryCube for different scales
+    private float GetMoveScale(float modelScale)
+    {
+        return Mathf.Max(-1919.1919191919f * modelScale + 1134.338f, 10f);
+    }
 }

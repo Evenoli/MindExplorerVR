@@ -19,10 +19,14 @@ public class FullMeshCreator : MonoBehaviour {
         print("Building Prefab Model...");
 
         FLATData.InitFlat();
-        FLATData.FlatRes cortexData = FLATData.Query(0f, 0f, 0f, 1750f, 870f, 1750f);
+        //FLATData.FlatRes cortexData = FLATData.Query(0f, 0f, 0f, 1750f, 870f, 1750f);
+        FLATData.FlatRes cortexData = FLATData.Query(250f, 1000f, -1669.26f, 1000f, 1895.73f, 3507.66f);
+        
         //FLATData.FlatRes cortexData = FLATData.Query(0f, 0f, 0f, 300f, 100f, 200f);
         GameObject fullModel = new GameObject();
-         
+
+        Vector3 min = new Vector3(Mathf.Infinity, Mathf.Infinity, Mathf.Infinity);
+        Vector3 max = new Vector3(-Mathf.Infinity, -Mathf.Infinity, -Mathf.Infinity);
 
         // Put data into vector3 form
         List<Vector3> cortexVertices = new List<Vector3>();
@@ -31,8 +35,21 @@ public class FullMeshCreator : MonoBehaviour {
             //Vector3 v = transform.TransformPoint(new Vector3(cortexData.coords[i], cortexData.coords[i + 1], cortexData.coords[i + 2]));
             Vector3 v = new Vector3(cortexData.coords[i], cortexData.coords[i + 1], cortexData.coords[i + 2]);
 
-            cortexVertices.Add(v);
+            min.x = Mathf.Min(min.x, v.x);
+            min.y = Mathf.Min(min.y, v.y);
+            min.z = Mathf.Min(min.z, v.z);
+
+            max.x = Mathf.Max(max.x, v.x);
+            max.y = Mathf.Max(max.y, v.y);
+            max.z = Mathf.Max(max.z, v.z);
+
+            Vector3 p = CoordinateConvertion.FlatToModel(v);
+
+            cortexVertices.Add(p);
         }
+
+        print("Min: " + min.ToString());
+        print("Max: " + max.ToString());
 
         int vertexCount = cortexVertices.Count;
         

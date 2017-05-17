@@ -60,7 +60,7 @@ public class BoxQuery : MonoBehaviour {
         if(m_lowerSphere && m_upperSphere)
         {
             Vector3 offset = m_cortexDrawer.GetQueryCenter();
-
+            print(offset);
             //Transform query points to world, then to model frame
             Transform sphereHoldertrans = m_lowerSphere.transform.parent;
             Vector3 lower = m_cortexDrawer.transform.InverseTransformPoint(sphereHoldertrans.TransformPoint(m_lowerSphere.localPosition)) + offset;

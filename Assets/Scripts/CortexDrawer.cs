@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Threading;
 using System.Runtime.InteropServices;
-using System;
 using System.IO;
 using UnityEditor;
 
@@ -11,14 +10,14 @@ public class CortexDrawer : MonoBehaviour {
 
     public GameObject m_MeshPartPrefab;
     public GameObject m_MeshParts;
-    public GameObject m_defaultMeshParts;
+    public GameObject m_FullLineModel;
     public GameObject m_QueryBox;
     public Flash m_queryBoxFlash;
     public NewtonVR.NVRButton m_ResetButton;
     public Display m_ScreenDisplay;
 
     private List<GameObject> m_MeshModelParts;
-    private const int MAX_VERTECIS_PER_MESH = 64998; // Multiple of 3 to keep triangles in order
+    private const int MAX_VERTICES_PER_MESH = 64998; // Multiple of 3 to keep triangles in order
     // Thread used for performing queries
     private Thread m_queryThread;
     // True if query has returned, and mesh hasn't been rendered yet.
@@ -33,6 +32,7 @@ public class CortexDrawer : MonoBehaviour {
     private Vector3 m_curUpperQueryCorner;
     // center position of current query
     private Vector3 m_QueryCenter;
+    private Vector3 m_DefaultQueryCenter;
     // Bool tracking if a query is currently in progress
     private bool m_queryInProgress;
 
@@ -49,10 +49,12 @@ public class CortexDrawer : MonoBehaviour {
 
         // Init mesh model list and add pre-loaded mesh parts to it
         m_MeshModelParts = new List<GameObject>();
+        /*
         for(int c = 0; c < m_MeshParts.transform.childCount; c++)
         {
             m_MeshModelParts.Add(m_MeshParts.transform.GetChild(c).gameObject);
         }
+        */
 
 
         print("Initialising Flat manager...");
@@ -66,7 +68,8 @@ public class CortexDrawer : MonoBehaviour {
         m_queryInProgress = false;
 
         // Set default query center coords
-        m_QueryCenter = new Vector3(875f, 435f, 875f);
+        m_DefaultQueryCenter = m_FullLineModel.transform.localPosition * -1;
+        m_QueryCenter = m_DefaultQueryCenter;
 
         m_DefaultModelPos = transform.localPosition;
         m_DefaultModelScale = transform.localScale;
@@ -84,6 +87,10 @@ public class CortexDrawer : MonoBehaviour {
         transform.localRotation = m_DefaultModelRotation;
         transform.localScale = m_DefaultModelScale;
 
+        m_QueryBox.transform.localPosition = Vector3.zero;
+        m_QueryBox.transform.localEulerAngles = Vector3.zero;
+        m_QueryBox.transform.localScale = new Vector3(1000f, 1000f, 1000f);
+
         print("Destroying old mesh..");
         foreach (GameObject mesh in m_MeshModelParts)
         {
@@ -91,29 +98,20 @@ public class CortexDrawer : MonoBehaviour {
         }
         m_MeshModelParts.Clear();
 
-        int numChildren = m_defaultMeshParts.transform.childCount;
-
-        for(int i = 0; i < numChildren; i++)
-        {
-            GameObject Prefabmesh = m_defaultMeshParts.transform.GetChild(i).gameObject;
-            GameObject mesh = Instantiate(Prefabmesh);
-            mesh.transform.SetParent(m_MeshParts.transform);
-            mesh.transform.localScale = new Vector3(1, 1, 1);
-            mesh.transform.localPosition = Vector3.zero;
-            mesh.transform.localEulerAngles = Vector3.zero;
-            m_MeshModelParts.Add(mesh);
-        }
+        m_FullLineModel.SetActive(true);
 
         // Set default query center coords
-        m_QueryCenter = new Vector3(875f, 435f, 875f);
+        m_QueryCenter = m_DefaultQueryCenter;
         m_MeshParts.transform.localPosition = -1 * m_QueryCenter;
         
     }
+
 
     public Vector3 GetQueryCenter()
     {
         return m_QueryCenter;
     }
+
 
     public void DrawNewQuery(float p0, float p1, float p2, float p3, float p4, float p5)
     {
@@ -123,7 +121,8 @@ public class CortexDrawer : MonoBehaviour {
             m_queryBoxFlash.SetFlashActive(true);
             m_ScreenDisplay.ShowQueryLoading(true);
             m_queryInProgress = true;
-            m_curModelSize = new Vector3(Math.Abs(p3 - p0), Math.Abs(p4 - p1), Math.Abs(p5 - p2));
+
+            m_curModelSize = new Vector3(Mathf.Abs(p3 - p0), Mathf.Abs(p4 - p1), Mathf.Abs(p5 - p2));
             m_curBottomQueryCorner = new Vector3(p0, p1, p2);
             m_curUpperQueryCorner = new Vector3(p3, p4, p5);
             print("Query lower: " + m_curBottomQueryCorner.ToString());
@@ -156,6 +155,7 @@ public class CortexDrawer : MonoBehaviour {
             }
             m_MeshModelParts.Clear();
         }
+        m_FullLineModel.SetActive(false);
 
         print("Query done. Building Mesh...");
 
@@ -166,22 +166,12 @@ public class CortexDrawer : MonoBehaviour {
         float newScale = m_defaultNewQueryScale / newQueryBoxScale;
         transform.localScale = newScale * m_DefaultModelScale;
 
-        Vector3 min = new Vector3(Mathf.Infinity, Mathf.Infinity, Mathf.Infinity);
-        Vector3 max = new Vector3(0, 0, 0);
-
         // Put data into vector3 form
         List<Vector3> cortexVertices = new List<Vector3>();
         for (int i = 0; i < cortexData.numcoords; i += 3)
         {
             Vector3 v = new Vector3(cortexData.coords[i], cortexData.coords[i + 1], cortexData.coords[i + 2]);
-            min.x = Mathf.Min(v.x, min.x);
-            min.y = Mathf.Min(v.y, min.y);
-            min.z = Mathf.Min(v.z, min.z);
 
-            max.x = Mathf.Max(v.x,  max.x);
-            max.y = Mathf.Max(v.y, max.y);
-            max.z = Mathf.Max(v.z, max.z);
-            //Vector3 v = new Vector3(cortexData.coords[i], cortexData.coords[i + 1], cortexData.coords[i + 2]) * transform.localScale.x;
             cortexVertices.Add(v);
         }
 
@@ -193,19 +183,28 @@ public class CortexDrawer : MonoBehaviour {
         if (vertexCount > 0)
         {
 
-            int numMeshesRequired = (vertexCount / MAX_VERTECIS_PER_MESH) + 1;
+            // Calculate number of meshes needed
+            int numMeshesRequired = (vertexCount / MAX_VERTICES_PER_MESH) + 1;
 
             for (int i = 0; i < numMeshesRequired; i++)
             {
 
+                // Create mesh and vertecis, uv and triangles lists
                 Mesh mesh = new Mesh();
                 List<Vector2> UVs = new List<Vector2>();
                 List<int> triangles = new List<int>();
-                int startInd = i * MAX_VERTECIS_PER_MESH;
-                int endInd = Math.Min(startInd + MAX_VERTECIS_PER_MESH, vertexCount);
+
+                // Calculate start and end vert indexes for current mesh
+                int startInd = i * MAX_VERTICES_PER_MESH;
+                int endInd = Mathf.Min(startInd + MAX_VERTICES_PER_MESH, vertexCount);
+
+                // Get vertices for current mesh
                 Vector3[] vertices = cortexVertices.GetRange(startInd, endInd - startInd).ToArray();
+               
+                // Set mesh vertices
                 mesh.vertices = vertices;
 
+                // Set UVs and triangles for mesh
                 for (int j = 0; j < endInd - startInd; j++)
                 {
                     UVs.Add(new Vector2(vertices[j].x, vertices[j].z));
@@ -222,27 +221,36 @@ public class CortexDrawer : MonoBehaviour {
                 mesh.uv = UVs.ToArray();
                 mesh.RecalculateNormals();
 
+                // Instantiate new game object to hold mesh and set is as child of 'meshparts' object
                 GameObject meshPart = Instantiate(m_MeshPartPrefab);
                 meshPart.transform.SetParent(m_MeshParts.transform);
 
+                // Add mesh to gameobject
                 MeshFilter mf = meshPart.GetComponent<MeshFilter>();
                 if (mf)
                 {
                     mf.mesh = mesh;
                 }
 
+                // Add to mesh parts list
                 m_MeshModelParts.Add(meshPart);
+
+                // Reset transform of new game object
                 meshPart.transform.localPosition = new Vector3(0, 0, 0);
                 meshPart.transform.localScale = new Vector3(1, 1, 1);
             }
         }
 
+        // Center the new model
         m_MeshParts.transform.localPosition = -1 * m_QueryCenter;
         m_QueryBox.transform.localPosition = Vector3.zero;
+
+        // Set control mode back to explore
         ControlModeManager cmm = GetComponent<ControlModeManager>();
         if(cmm)
             cmm.SetControlMode(ControlModeManager.CONTROL_MODE.EXPLORE);
 
+        // Deactivate 'loading' visuals
         m_queryInProgress = false;
         m_queryBoxFlash.SetFlashActive(false);
         m_ScreenDisplay.ShowQueryLoading(false);

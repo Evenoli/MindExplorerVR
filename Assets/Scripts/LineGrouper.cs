@@ -23,35 +23,34 @@ public class LineGrouper {
             bool newGroup = true;
             foreach(List<Vector3> group in consideredLists)
             {
-                if(group.Contains(a))
+                int indxB = group.IndexOf(b);
+                // If they are in a group but not at the end of a group(line), 
+                // we'll start a new group(line)
+                if (indxB == 0)
                 {
-                    // If they are but not at the end of a group(line), we'll start a new group(line)
-                    if (group.IndexOf(a) == 0)
+                    group.Insert(0, a);
+                    newGroup = false;
+                }
+                else if (indxB == group.Count - 1)
+                {
+                    group.Add(a);
+                    newGroup = false;
+                }
+                else
+                {
+                    int indxA = group.IndexOf(a);
+
+                    if (indxA == 0)
                     {
                         group.Insert(0, b);
                         newGroup = false;
                     }
-                    else if (group.IndexOf(a) == group.Count - 1)
+                    else if (indxA == group.Count - 1)
                     {
                         group.Add(b);
                         newGroup = false;
                     }
                 }
-                else if (group.Contains(b))
-                {
-                    // If they are but not at the end of a group(line), we'll start a new group(line)
-                    if (group.IndexOf(b) == 0)
-                    {
-                        group.Insert(0, a);
-                        newGroup = false;
-                    }
-                    else if (group.IndexOf(b) == group.Count - 1)
-                    {
-                        group.Add(a);
-                        newGroup = false;
-                    }
-                }
-
                 //Group is full. add it to completed list
                 if(group.Count >= MaxGroupSize)
                 {
