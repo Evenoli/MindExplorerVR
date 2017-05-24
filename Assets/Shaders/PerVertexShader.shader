@@ -7,11 +7,12 @@
 
 		SubShader
 	{
-		Tags { "RenderType" = "Opaque" }
+		Tags { "RenderType" = "Opaque" "Queue" = "Transparent" }
 		LOD 100
 		Cull Off
 		Lighting Off
-		ZWrite On
+		ZWrite Off
+		Blend SrcAlpha OneMinusSrcAlpha
 
 		Pass
 		{
@@ -31,10 +32,13 @@
 				fixed4 color : COLOR;
 			};
 
+			fixed4 _Color;
+
 			v2f vert(appdata v) {
 				v2f o;
 				o.pos = UnityObjectToClipPos(v.vertex);
 				o.color = v.color;
+				o.color.a = _Color.a;
 				return o;
 			}
 			

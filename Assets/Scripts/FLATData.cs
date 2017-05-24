@@ -23,9 +23,9 @@ public static class FLATData {
         var currentPath = Environment.GetEnvironmentVariable("PATH",
             EnvironmentVariableTarget.Process);
 #if UNITY_EDITOR_32
-    var dllPath = Application.dataPath + "/Plugins";
+    var dllPath = Application.dataPath + "/Plugins/";
 #elif UNITY_EDITOR_64
-        var dllPath = Application.dataPath + "/Plugins";
+        var dllPath = Application.dataPath + "/Plugins/";
 #else // Player
     var dllPath = Application.dataPath
         + Path.DirectorySeparatorChar + "Plugins";
@@ -39,6 +39,10 @@ public static class FLATData {
 
     }
 
+    public static string GetPath()
+    {
+        return path;
+    }
 
     [DllImport("FLATDLL2")]
     private static extern bool InitFlatManager();
