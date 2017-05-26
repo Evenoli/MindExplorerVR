@@ -9,7 +9,6 @@ public class FullLineModelRenderer : MonoBehaviour {
     private bool m_messagingActive;
     private bool m_fadingOut;
     private bool m_fadingIn;
-    private Material m_LineModelMat;
 
     public float m_fadeRate;
 
@@ -17,7 +16,7 @@ public class FullLineModelRenderer : MonoBehaviour {
     public Color m_activatedvertexCol = new Color(1.0f, 0.0f, 0.0f, 1.0f);
 
     private const int MAX_VERTICES_PER_MESH = 64998;
-    private int MaxVertIndexPerMesh = ((MAX_VERTICES_PER_MESH / 2) - 1);
+    private int MaxVertIndexPerMesh = ((MAX_VERTICES_PER_MESH / 6) - 1);
 
     // Number of steps taken for vertices to fade back to original colour
     public int m_steps;
@@ -31,7 +30,7 @@ public class FullLineModelRenderer : MonoBehaviour {
     private int m_numVerts;
     private int m_numMeshes;
     // List to track which vertices are contained in which mesh (meshVerts[meshInd][VertInd])
-    private List<List<int>> m_meshVerts;
+    // private List<List<int>> m_meshVerts;
     // List to hold all vertices from file
     private List<Vector3> m_verts;
     // Lists to hold adjacency info from file
@@ -68,7 +67,7 @@ public class FullLineModelRenderer : MonoBehaviour {
         }
 
         m_numMeshes = mi.numMeshes;
-        m_meshVerts = mi.meshVerts;
+        //m_meshVerts = mi.meshVerts;
 
         // Initialise all vertex states to -2 (unactivated)
         m_vertexState = new List<int>();
@@ -90,14 +89,12 @@ public class FullLineModelRenderer : MonoBehaviour {
 
         // Initialise colour list
         m_VertexColours = new List<Color>();
-        for(int i = 0; i < m_numVerts*2; i++)
+        for(int i = 0; i < m_numVerts*6; i++)
         {
             m_VertexColours.Add(m_defaultVertexCol);
         }
 
         m_iterationCounter = 0;
-
-        m_LineModelMat = GetComponentInChildren<Renderer>().material;
 
         SetVertexColours();
 
@@ -167,10 +164,12 @@ public class FullLineModelRenderer : MonoBehaviour {
             if( state <= m_steps && state >= m_steps/2)
             {
                 int[] vs = FileIndexToVertexIndex(vert);
-                m_VertexColours[vs[0]] -= fadeDefaultCol;
-                m_VertexColours[vs[0]] += fadeActiveCol;
-                m_VertexColours[vs[1]] -= fadeDefaultCol;
-                m_VertexColours[vs[1]] += fadeActiveCol;
+                for (int j = 0; j < vs.Length; j++)
+                {
+                    m_VertexColours[vs[j]] -= fadeDefaultCol;
+                    m_VertexColours[vs[j]] += fadeActiveCol;
+                }
+
                 m_vertexState[vert]--;
             }
 
@@ -178,10 +177,12 @@ public class FullLineModelRenderer : MonoBehaviour {
             else if (state <= m_steps/2 && state > 0)
             {
                 int[] vs = FileIndexToVertexIndex(vert);
-                m_VertexColours[vs[0]] += fadeDefaultCol;
-                m_VertexColours[vs[0]] -= fadeActiveCol;
-                m_VertexColours[vs[1]] += fadeDefaultCol;
-                m_VertexColours[vs[1]] -= fadeActiveCol;
+                for(int j=0; j < vs.Length; j++)
+                {
+                    m_VertexColours[vs[j]] += fadeDefaultCol;
+                    m_VertexColours[vs[j]] -= fadeActiveCol;
+                }
+
                 m_vertexState[vert]--;
             }
 
@@ -189,8 +190,11 @@ public class FullLineModelRenderer : MonoBehaviour {
             else if (state == 0)
             {
                 int[] vs = FileIndexToVertexIndex(vert);
-                m_VertexColours[vs[0]] = m_defaultVertexCol;
-                m_VertexColours[vs[1]] = m_defaultVertexCol;
+                for (int j = 0; j < vs.Length; j++)
+                {
+                    m_VertexColours[vs[j]] = m_defaultVertexCol;
+                    m_VertexColours[vs[j]] = m_defaultVertexCol;
+                }
                 m_vertexState[vert] = -1;
                 completeVerts.Add(vert);
             }
@@ -221,8 +225,8 @@ public class FullLineModelRenderer : MonoBehaviour {
         for(int i = 0; i < m_numMeshes; i++)
         {
             VertexManager vm = m_VertexManagers[i];
-            int meshVertCount = vm.m_VertexIDs.Count*2;
-            vm.SetMeshCols(m_VertexColours.GetRange(MaxVertIndexPerMesh * i * 2, meshVertCount));
+            int meshVertCount = vm.m_VertexIDs.Count*6;
+            vm.SetMeshCols(m_VertexColours.GetRange(MaxVertIndexPerMesh * i * 6, meshVertCount));
         }
     }
 
@@ -233,8 +237,11 @@ public class FullLineModelRenderer : MonoBehaviour {
         {
             m_vertexState[i] = -2;
             int[] vs = FileIndexToVertexIndex(i);
-            m_VertexColours[vs[0]] = m_defaultVertexCol;
-            m_VertexColours[vs[1]] = m_defaultVertexCol;
+            for (int j = 0; j < vs.Length; j++)
+            {
+                m_VertexColours[vs[j]] = m_defaultVertexCol;
+                m_VertexColours[vs[j]] = m_defaultVertexCol;
+            }
         }
 
         SetVertexColours();
@@ -252,9 +259,10 @@ public class FullLineModelRenderer : MonoBehaviour {
     // Converts from vertex index in data file to vertex index used with meshes
     private int[] FileIndexToVertexIndex(int fileInd)
     {
-        int[] res = new int[2];
-        res[0] = fileInd * 2;
-        res[1] = (fileInd * 2) + 1;
+        int[] res = new int[6];
+        for(int i = 0; i < 6; i++)
+            res[i] = fileInd * 6 + i;
+
         return res;
     }
 
@@ -283,7 +291,7 @@ public class FullLineModelRenderer : MonoBehaviour {
             foreach (Renderer r in GetComponentsInChildren<Renderer>())
             {
                 r.material.color -= new Color(0, 0, 0, m_fadeRate);
-                if (m_LineModelMat.color.a <= 0)
+                if (r.material.color.a <= 0)
                     m_fadingOut = false;
             }
 
@@ -295,7 +303,7 @@ public class FullLineModelRenderer : MonoBehaviour {
             foreach (Renderer r in GetComponentsInChildren<Renderer>())
             {
                 r.material.color += new Color(0, 0, 0, m_fadeRate);
-                if (m_LineModelMat.color.a >= 1)
+                if (r.material.color.a >= 1)
                     m_fadingIn = false;
             }
         }

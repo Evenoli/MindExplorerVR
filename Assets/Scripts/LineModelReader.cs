@@ -28,8 +28,6 @@ public class LineModelReader : MonoBehaviour {
     private List<Mesh> meshes;
     // List to hold all mesh part game objects
     private List<GameObject> meshParts;
-    // List to track which vertices are contained in which mesh (meshVerts[meshInd][VertInd])
-    private List<List<int>> meshVerts;
 
     // Mesh info of last run mesh build
     private MeshInfo m_meshInfo;
@@ -137,9 +135,8 @@ public class LineModelReader : MonoBehaviour {
         //float lineWidth = 0.002f;
         float lineWidth = 2.5f;
 
-        meshVerts = new List<List<int>>();
-
-        int numMeshesRequired = (numVerts / ((MAX_VERTICES_PER_MESH / 2) - 1)) + 1;
+        //int numMeshesRequired = (numVerts / ((MAX_VERTICES_PER_MESH / 2) - 1)) + 1;
+        int numMeshesRequired = (numVerts / ((MAX_VERTICES_PER_MESH / 6) - 1)) + 1;
 
         // Per mesh m
         for (int m = 0; m < numMeshesRequired; m++)
@@ -162,10 +159,121 @@ public class LineModelReader : MonoBehaviour {
             int vertCounter = 0;
 
             // Calculate start and end vert indexes for current mesh
-            int startInd = m * ((MAX_VERTICES_PER_MESH / 2) - 1);
-            int endInd = Mathf.Min(startInd + ((MAX_VERTICES_PER_MESH / 2) - 1), numVerts);
+            int startInd = m * ((MAX_VERTICES_PER_MESH / 6) - 1);
+            int endInd = Mathf.Min(startInd + ((MAX_VERTICES_PER_MESH / 6) - 1), numVerts);
 
-            // For each vert in this mesh
+            // For each vert in this mesh (Hexagon mode)
+            for (int v = startInd; v < endInd - 1; v += 2)
+            {
+                // add vert indexes to current vs list
+                vs.Add(v);
+                vs.Add(v + 1);
+
+                // Get start and end points of line
+                Vector3 end = lines[v];
+                Vector3 start = lines[v + 1];
+
+                // calculate normal and 'side' direction of line segment
+                Vector3 normal = Vector3.Cross(start, end);
+                Vector3 side = Vector3.Cross(normal, end - start);
+                side.Normalize();
+
+
+                // Create vectors for each corner of the Hexagonal mesh
+                Vector3 a = start + side * (lineWidth / 2);
+                Vector3 b = start + Vector3.Normalize(Quaternion.AngleAxis(60, end - start) * side) * (lineWidth / 2);
+                Vector3 c = start + Vector3.Normalize(Quaternion.AngleAxis(120, end - start) * side) * (lineWidth / 2);
+                Vector3 d = start - side * (lineWidth / 2);
+                Vector3 e = start + Vector3.Normalize(Quaternion.AngleAxis(-120, end - start) * side) * (lineWidth / 2);
+                Vector3 f = start + Vector3.Normalize(Quaternion.AngleAxis(-60, end - start) * side) * (lineWidth / 2);
+
+                Vector3 g = end + side * (lineWidth / 2);
+                Vector3 h = end + Vector3.Normalize(Quaternion.AngleAxis(60, end - start) * side) * (lineWidth / 2);
+                Vector3 i = end + Vector3.Normalize(Quaternion.AngleAxis(120, end - start) * side) * (lineWidth / 2);
+                Vector3 j = end - side * (lineWidth / 2);
+                Vector3 k = end + Vector3.Normalize(Quaternion.AngleAxis(-120, end - start) * side) * (lineWidth / 2);
+                Vector3 l = end + Vector3.Normalize(Quaternion.AngleAxis(-60, end - start) * side) * (lineWidth / 2);
+
+                // add vectors to vertices list
+                vertices.Add(a);
+                vertices.Add(b);
+                vertices.Add(c);
+                vertices.Add(d);
+                vertices.Add(e);
+                vertices.Add(f);
+                vertices.Add(g);
+                vertices.Add(h);
+                vertices.Add(i);
+                vertices.Add(j);
+                vertices.Add(k);
+                vertices.Add(l);
+
+                // Add uvs for these 12 vectors
+                UVs.Add(new Vector2(vertices[vertCounter].x, vertices[vertCounter].z));
+                UVs.Add(new Vector2(vertices[vertCounter + 1].x, vertices[vertCounter + 1].z));
+                UVs.Add(new Vector2(vertices[vertCounter + 2].x, vertices[vertCounter + 2].z));
+                UVs.Add(new Vector2(vertices[vertCounter + 3].x, vertices[vertCounter + 3].z));
+                UVs.Add(new Vector2(vertices[vertCounter + 4].x, vertices[vertCounter + 4].z));
+                UVs.Add(new Vector2(vertices[vertCounter + 5].x, vertices[vertCounter + 5].z));
+                UVs.Add(new Vector2(vertices[vertCounter + 6].x, vertices[vertCounter + 6].z));
+                UVs.Add(new Vector2(vertices[vertCounter + 7].x, vertices[vertCounter + 7].z));
+                UVs.Add(new Vector2(vertices[vertCounter + 8].x, vertices[vertCounter + 8].z));
+                UVs.Add(new Vector2(vertices[vertCounter + 9].x, vertices[vertCounter + 9].z));
+                UVs.Add(new Vector2(vertices[vertCounter + 10].x, vertices[vertCounter + 10].z));
+                UVs.Add(new Vector2(vertices[vertCounter + 11].x, vertices[vertCounter + 11].z));
+
+                // Add triangles for these 12 vectors
+                triangles.Add(vertCounter);
+                triangles.Add(vertCounter+6);
+                triangles.Add(vertCounter+1);
+                triangles.Add(vertCounter+1);
+                triangles.Add(vertCounter+6);
+                triangles.Add(vertCounter+7);
+
+                triangles.Add(vertCounter + 1);
+                triangles.Add(vertCounter + 7);
+                triangles.Add(vertCounter + 2);
+                triangles.Add(vertCounter + 2);
+                triangles.Add(vertCounter + 7);
+                triangles.Add(vertCounter + 8);
+
+                triangles.Add(vertCounter + 2);
+                triangles.Add(vertCounter + 8);
+                triangles.Add(vertCounter + 3);
+                triangles.Add(vertCounter + 3);
+                triangles.Add(vertCounter + 8);
+                triangles.Add(vertCounter + 9);
+
+                triangles.Add(vertCounter + 3);
+                triangles.Add(vertCounter + 9);
+                triangles.Add(vertCounter + 4);
+                triangles.Add(vertCounter + 4);
+                triangles.Add(vertCounter + 9);
+                triangles.Add(vertCounter + 10);
+
+                triangles.Add(vertCounter + 4);
+                triangles.Add(vertCounter + 10);
+                triangles.Add(vertCounter + 5);
+                triangles.Add(vertCounter + 5);
+                triangles.Add(vertCounter + 10);
+                triangles.Add(vertCounter + 11);
+
+                triangles.Add(vertCounter + 5);
+                triangles.Add(vertCounter + 11);
+                triangles.Add(vertCounter);
+                triangles.Add(vertCounter);
+                triangles.Add(vertCounter + 11);
+                triangles.Add(vertCounter + 6);
+
+
+                // Increment vert counter
+                vertCounter += 12;
+            }
+
+
+
+
+            /* Rectange mode
             for (int i = startInd; i < endInd - 1; i += 2)
             {
                 // add vert indexes to current vs list
@@ -212,8 +320,7 @@ public class LineModelReader : MonoBehaviour {
                 // Increment vert counter
                 vertCounter += 4;
             }
-
-            meshVerts.Add(vs);
+            */
 
             // Add arrays to mesh object
             mesh.vertices = vertices.ToArray();
@@ -222,7 +329,7 @@ public class LineModelReader : MonoBehaviour {
             mesh.RecalculateNormals();
 
 
-            UnityEditor.AssetDatabase.CreateAsset(mesh, "Assets/FullCortexModel/Line/MeshPart__" + m + ".asset");
+            UnityEditor.AssetDatabase.CreateAsset(mesh, "Assets/FullCortexModel/LineHex/MeshPartHex__" + m + ".asset");
 
             // Create lineSeg object
             GameObject lineSeg = Instantiate(m_LineSegPrefab);
@@ -251,7 +358,6 @@ public class LineModelReader : MonoBehaviour {
         MeshInfo meshInf = new MeshInfo();
         meshInf.numVerts = numVerts;
         meshInf.numMeshes = meshes.Count;
-        meshInf.meshVerts = meshVerts;
 
         m_meshInfo = meshInf;
         m_buildRun = true;

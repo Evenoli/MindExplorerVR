@@ -9,8 +9,6 @@ public class VertexManager : MonoBehaviour {
     public int m_MeshID;
     public List<int> m_VertexIDs;
 
-    private Mesh m_mesh;
-
     void Start()
     {
         MeshFilter mf = GetComponent<MeshFilter>();
@@ -19,7 +17,6 @@ public class VertexManager : MonoBehaviour {
             print("Missing mesh filter on cortex mesh part!!!");
             return;
         }
-        m_mesh = mf.mesh;
     }
     
     public void SetMeshCols(List<Color> cols)
