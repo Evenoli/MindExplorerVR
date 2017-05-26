@@ -52,7 +52,7 @@ public class BoxMessage : MonoBehaviour {
 
     private void TriggerPulled(object sender, ClickedEventArgs e)
     {
-        if (m_controlManager.GetCurrentControlMode() == ControlModeManager.CONTROL_MODE.MESSAGE)
+        if (m_controlManager.GetCurrentControlMode() == ControlModeManager.CONTROL_MODE.MESSAGE_BOX)
             StartMessage();
     }
 
@@ -77,13 +77,13 @@ public class BoxMessage : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        if (m_controlManager.GetCurrentControlMode() == ControlModeManager.CONTROL_MODE.MESSAGE && !m_boxVisible)
+        if (m_controlManager.GetCurrentControlMode() == ControlModeManager.CONTROL_MODE.MESSAGE_BOX && !m_boxVisible)
         {
             for (int i = 0; i < transform.childCount; i++)
                 transform.GetChild(i).gameObject.SetActive(true);
             m_boxVisible = true;
         }
-        else if (m_controlManager.GetCurrentControlMode() != ControlModeManager.CONTROL_MODE.MESSAGE && m_boxVisible)
+        else if (m_controlManager.GetCurrentControlMode() != ControlModeManager.CONTROL_MODE.MESSAGE_BOX && m_boxVisible)
         {
             for (int i = 0; i < transform.childCount; i++)
                 transform.GetChild(i).gameObject.SetActive(false);

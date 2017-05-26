@@ -144,6 +144,8 @@
     <None Include="Assets\Shaders\Multiply by Solid Color.shader" />
     <None Include="Assets\Shaders\OutlinedDiffuse.shader" />
     <None Include="Assets\Shaders\PerVertexShader.shader" />
+    <None Include="Assets\Shaders\TransparentUnlit.shader" />
+    <None Include="Assets\Shaders\WristMenuBacking.shader" />
     <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\MobileBlur.shader" />
     <None Include="Assets\SteamVR\InteractionSystem\Core\Shaders\SeeThru.shader" />
     <None Include="Assets\SteamVR\InteractionSystem\Core\Shaders\Silhouette.shader" />

@@ -5,29 +5,34 @@ using UnityEngine;
 public class Display : MonoBehaviour {
 
     public GameObject m_QueryMode;
-    public GameObject m_ExploreMode;
     public GameObject m_MessageMode;
+    public GameObject m_ControlModel;
+    public GameObject m_ControlBox;
     public GameObject m_QueryLoading;
 
-	public void SetExploreMode()
-    {
-        m_QueryMode.SetActive(false);
-        m_MessageMode.SetActive(false);
-        m_ExploreMode.SetActive(true);
-    }
 
     public void SetQueryMode()
     {
         m_QueryMode.SetActive(true);
         m_MessageMode.SetActive(false);
-        m_ExploreMode.SetActive(false);
     }
 
     public void SetMessageMode()
     {
         m_MessageMode.SetActive(true);
-        m_ExploreMode.SetActive(false);
         m_QueryMode.SetActive(false);
+    }
+
+    public void SetModelControl()
+    {
+        m_ControlBox.SetActive(false);
+        m_ControlModel.SetActive(true);
+    }
+
+    public void SetBoxControl()
+    {
+        m_ControlBox.SetActive(true);
+        m_ControlModel.SetActive(false);
     }
 
     public void ShowQueryLoading(bool show)

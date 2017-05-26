@@ -213,6 +213,7 @@ public class CortexDrawer : MonoBehaviour {
         float newQueryBoxScale = m_QueryBox.transform.localScale.x; // x,y,z all same
         float newScale = m_defaultNewQueryScale / newQueryBoxScale;
         transform.localScale = newScale * m_DefaultModelScale;
+        m_CurQueryScale = transform.localScale;
 
 
         // Put data into vector3 form
@@ -303,7 +304,7 @@ public class CortexDrawer : MonoBehaviour {
         // Set control mode back to explore
         ControlModeManager cmm = GetComponent<ControlModeManager>();
         if(cmm)
-            cmm.SetControlMode(ControlModeManager.CONTROL_MODE.EXPLORE);
+            cmm.SetControlMode(ControlModeManager.CONTROL_MODE.QUERY_MODEL);
 
         // Deactivate 'loading' visuals
         m_queryInProgress = false;

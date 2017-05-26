@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ControlModeManager : MonoBehaviour {
 
-    public enum CONTROL_MODE { EXPLORE, QUERY, MESSAGE };
+    public enum CONTROL_MODE { QUERY_MODEL, QUERY_BOX,  MESSAGE_MODEL, MESSAGE_BOX };
     private CONTROL_MODE m_curControlMode;
 
     public GameObject m_LeftController;
@@ -22,7 +22,7 @@ public class ControlModeManager : MonoBehaviour {
     // Use this for initialization
     void Start () {
         // Default control mode
-        m_curControlMode = CONTROL_MODE.EXPLORE;
+        m_curControlMode = CONTROL_MODE.QUERY_MODEL;
 
         if (m_LeftController)
             m_LeftTrackedContr = m_LeftController.GetComponent<SteamVR_TrackedController>();
@@ -56,16 +56,17 @@ public class ControlModeManager : MonoBehaviour {
 
     private void ToggleMode()
     {
-        m_curControlMode = (CONTROL_MODE)(((int)m_curControlMode + 1) % 3);
+        m_curControlMode = (CONTROL_MODE)(((int)m_curControlMode + 1) % 4);
 
         SetCorrectModel();
     }
 
     private void SetCorrectModel()
     {
-        if (m_curControlMode == CONTROL_MODE.EXPLORE)
+        if (m_curControlMode == CONTROL_MODE.QUERY_MODEL)
         {
-            m_ScreenDisplay.SetExploreMode();
+            m_ScreenDisplay.SetQueryMode();
+            m_ScreenDisplay.SetModelControl();
             if (m_CortexDrawer.IsQueryShown())
             {
                 //m_meshParts.SetActive(true);
@@ -82,9 +83,10 @@ public class ControlModeManager : MonoBehaviour {
                 m_CortexDrawer.StartQueryFadeOut();
             }
         }
-        else if (m_curControlMode == CONTROL_MODE.QUERY)
+        else if (m_curControlMode == CONTROL_MODE.QUERY_BOX)
         {
             m_ScreenDisplay.SetQueryMode();
+            m_ScreenDisplay.SetBoxControl();
             if (m_CortexDrawer.IsQueryShown())
             {
                 //m_meshParts.SetActive(true);
@@ -100,9 +102,24 @@ public class ControlModeManager : MonoBehaviour {
                 m_CortexDrawer.StartQueryFadeOut();
             }
         }
-        else if (m_curControlMode == CONTROL_MODE.MESSAGE)
+        else if (m_curControlMode == CONTROL_MODE.MESSAGE_MODEL)
         {
             m_ScreenDisplay.SetMessageMode();
+            m_ScreenDisplay.SetModelControl();
+            //m_meshParts.SetActive(false);
+            //m_LineModel.SetActive(true);
+            m_LineModel.GetComponent<FullLineModelRenderer>().StartFadeIn();
+            m_CortexDrawer.StartQueryFadeOut();
+
+            if (m_CortexDrawer.IsQueryShown())
+            {
+                m_CortexDrawer.SetModelToLineScale();
+            }
+        }
+        else if (m_curControlMode == CONTROL_MODE.MESSAGE_BOX)
+        {
+            m_ScreenDisplay.SetMessageMode();
+            m_ScreenDisplay.SetBoxControl();
             //m_meshParts.SetActive(false);
             //m_LineModel.SetActive(true);
             m_LineModel.GetComponent<FullLineModelRenderer>().StartFadeIn();

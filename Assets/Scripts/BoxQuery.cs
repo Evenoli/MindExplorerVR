@@ -51,7 +51,7 @@ public class BoxQuery : MonoBehaviour {
 
     private void TriggerPulled(object sender, ClickedEventArgs e)
     {
-        if(m_controlManager.GetCurrentControlMode() == ControlModeManager.CONTROL_MODE.QUERY)
+        if(m_controlManager.GetCurrentControlMode() == ControlModeManager.CONTROL_MODE.QUERY_BOX)
             Query();
     }
 
@@ -75,13 +75,13 @@ public class BoxQuery : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        if(m_controlManager.GetCurrentControlMode() == ControlModeManager.CONTROL_MODE.QUERY && !m_boxVisible )
+        if(m_controlManager.GetCurrentControlMode() == ControlModeManager.CONTROL_MODE.QUERY_BOX && !m_boxVisible )
         {
             for (int i = 0; i < transform.childCount; i++)
                 transform.GetChild(i).gameObject.SetActive(true);
             m_boxVisible = true;
         }
-        else if(m_controlManager.GetCurrentControlMode() != ControlModeManager.CONTROL_MODE.QUERY && m_boxVisible)
+        else if(m_controlManager.GetCurrentControlMode() != ControlModeManager.CONTROL_MODE.QUERY_BOX && m_boxVisible)
         {
             for (int i = 0; i < transform.childCount; i++)
                 transform.GetChild(i).gameObject.SetActive(false);

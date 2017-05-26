@@ -4,9 +4,15 @@ using UnityEngine;
 
 public class HandModelManager : MonoBehaviour {
 
+    public enum HAND { LEFT, RIGHT };
+
     public GameObject m_defaultModel;
     public GameObject m_pointModel;
     public GameObject m_fistModel;
+
+    public HAND m_Hand;
+
+    private bool m_nearMenu;
 
     private SteamVR_TrackedController m_controller;
 
@@ -21,7 +27,7 @@ public class HandModelManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if(m_controller.padPressed)
+		if(m_controller.padPressed || m_nearMenu)
         {
             m_defaultModel.SetActive(false);
             m_pointModel.SetActive(true);
@@ -40,4 +46,40 @@ public class HandModelManager : MonoBehaviour {
             m_fistModel.SetActive(false);
         }
 	}
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if(m_Hand == HAND.LEFT)
+        {
+            if(other.gameObject.tag == "RightHand")
+            {
+                m_nearMenu = true;
+            }
+        }
+        else
+        {
+            if (other.gameObject.tag == "LeftHand")
+            {
+                m_nearMenu = true;
+            }
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (m_Hand == HAND.LEFT)
+        {
+            if (other.gameObject.tag == "RightHand")
+            {
+                m_nearMenu = false;
+            }
+        }
+        else
+        {
+            if (other.gameObject.tag == "LeftHand")
+            {
+                m_nearMenu = false;
+            }
+        }
+    }
 }
