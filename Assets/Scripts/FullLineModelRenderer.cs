@@ -16,7 +16,7 @@ public class FullLineModelRenderer : MonoBehaviour {
     public Color m_activatedvertexCol = new Color(1.0f, 0.0f, 0.0f, 1.0f);
 
     private const int MAX_VERTICES_PER_MESH = 64998;
-    private int MaxVertIndexPerMesh = ((MAX_VERTICES_PER_MESH / 6) - 1);
+    private int MaxVertIndexPerMesh = ((MAX_VERTICES_PER_MESH / 4) - 1);
 
     // Number of steps taken for vertices to fade back to original colour
     public int m_steps;
@@ -69,6 +69,9 @@ public class FullLineModelRenderer : MonoBehaviour {
         m_numMeshes = mi.numMeshes;
         //m_meshVerts = mi.meshVerts;
 
+        if (m_numMeshes == -1)
+            print("-1 meshes");
+
         // Initialise all vertex states to -2 (unactivated)
         m_vertexState = new List<int>();
         for (int i = 0; i < m_numVerts; i++)
@@ -89,7 +92,7 @@ public class FullLineModelRenderer : MonoBehaviour {
 
         // Initialise colour list
         m_VertexColours = new List<Color>();
-        for(int i = 0; i < m_numVerts*6; i++)
+        for(int i = 0; i < m_numVerts*4; i++)
         {
             m_VertexColours.Add(m_defaultVertexCol);
         }
@@ -225,8 +228,8 @@ public class FullLineModelRenderer : MonoBehaviour {
         for(int i = 0; i < m_numMeshes; i++)
         {
             VertexManager vm = m_VertexManagers[i];
-            int meshVertCount = vm.m_VertexIDs.Count*6;
-            vm.SetMeshCols(m_VertexColours.GetRange(MaxVertIndexPerMesh * i * 6, meshVertCount));
+            int meshVertCount = vm.m_VertexIDs.Count*4;
+            vm.SetMeshCols(m_VertexColours.GetRange(MaxVertIndexPerMesh * i * 4, meshVertCount));
         }
     }
 
@@ -259,9 +262,9 @@ public class FullLineModelRenderer : MonoBehaviour {
     // Converts from vertex index in data file to vertex index used with meshes
     private int[] FileIndexToVertexIndex(int fileInd)
     {
-        int[] res = new int[6];
-        for(int i = 0; i < 6; i++)
-            res[i] = fileInd * 6 + i;
+        int[] res = new int[4];
+        for(int i = 0; i < 4; i++)
+            res[i] = fileInd * 4 + i;
 
         return res;
     }

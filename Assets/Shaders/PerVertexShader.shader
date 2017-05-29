@@ -9,7 +9,7 @@
 	{
 		Tags { "RenderType" = "Opaque" "Queue" = "Transparent" }
 		LOD 100
-		Cull Off
+		Cull Front
 		Lighting Off
 		ZWrite Off
 		Blend SrcAlpha OneMinusSrcAlpha

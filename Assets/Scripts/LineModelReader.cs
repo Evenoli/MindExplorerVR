@@ -136,7 +136,7 @@ public class LineModelReader : MonoBehaviour {
         float lineWidth = 2.5f;
 
         //int numMeshesRequired = (numVerts / ((MAX_VERTICES_PER_MESH / 2) - 1)) + 1;
-        int numMeshesRequired = (numVerts / ((MAX_VERTICES_PER_MESH / 6) - 1)) + 1;
+        int numMeshesRequired = (numVerts / ((MAX_VERTICES_PER_MESH / 4) - 1)) + 1;
 
         // Per mesh m
         for (int m = 0; m < numMeshesRequired; m++)
@@ -159,10 +159,10 @@ public class LineModelReader : MonoBehaviour {
             int vertCounter = 0;
 
             // Calculate start and end vert indexes for current mesh
-            int startInd = m * ((MAX_VERTICES_PER_MESH / 6) - 1);
-            int endInd = Mathf.Min(startInd + ((MAX_VERTICES_PER_MESH / 6) - 1), numVerts);
+            int startInd = m * ((MAX_VERTICES_PER_MESH / 4) - 1);
+            int endInd = Mathf.Min(startInd + ((MAX_VERTICES_PER_MESH / 4) - 1), numVerts);
 
-            // For each vert in this mesh (Hexagon mode)
+            // For each vert in this mesh (Square mode)
             for (int v = startInd; v < endInd - 1; v += 2)
             {
                 // add vert indexes to current vs list
@@ -177,22 +177,19 @@ public class LineModelReader : MonoBehaviour {
                 Vector3 normal = Vector3.Cross(start, end);
                 Vector3 side = Vector3.Cross(normal, end - start);
                 side.Normalize();
+                Vector3 side2 = Vector3.Normalize(Quaternion.AngleAxis(90, end - start) * side);
 
 
                 // Create vectors for each corner of the Hexagonal mesh
-                Vector3 a = start + side * (lineWidth / 2);
-                Vector3 b = start + Vector3.Normalize(Quaternion.AngleAxis(60, end - start) * side) * (lineWidth / 2);
-                Vector3 c = start + Vector3.Normalize(Quaternion.AngleAxis(120, end - start) * side) * (lineWidth / 2);
-                Vector3 d = start - side * (lineWidth / 2);
-                Vector3 e = start + Vector3.Normalize(Quaternion.AngleAxis(-120, end - start) * side) * (lineWidth / 2);
-                Vector3 f = start + Vector3.Normalize(Quaternion.AngleAxis(-60, end - start) * side) * (lineWidth / 2);
+                Vector3 a = start + side * (lineWidth / 2) - side2 * (lineWidth / 2);
+                Vector3 b = start + side * (lineWidth / 2) + side2 * (lineWidth / 2);
+                Vector3 c = start - side * (lineWidth / 2) + side2 * (lineWidth / 2);
+                Vector3 d = start - side * (lineWidth / 2) - side2 * (lineWidth / 2);
 
-                Vector3 g = end + side * (lineWidth / 2);
-                Vector3 h = end + Vector3.Normalize(Quaternion.AngleAxis(60, end - start) * side) * (lineWidth / 2);
-                Vector3 i = end + Vector3.Normalize(Quaternion.AngleAxis(120, end - start) * side) * (lineWidth / 2);
-                Vector3 j = end - side * (lineWidth / 2);
-                Vector3 k = end + Vector3.Normalize(Quaternion.AngleAxis(-120, end - start) * side) * (lineWidth / 2);
-                Vector3 l = end + Vector3.Normalize(Quaternion.AngleAxis(-60, end - start) * side) * (lineWidth / 2);
+                Vector3 e = end + side * (lineWidth / 2) - side2 * (lineWidth / 2);
+                Vector3 f = end + side * (lineWidth / 2) + side2 * (lineWidth / 2);
+                Vector3 g = end - side * (lineWidth / 2) + side2 * (lineWidth / 2);
+                Vector3 h = end - side * (lineWidth / 2) - side2 * (lineWidth / 2);
 
                 // add vectors to vertices list
                 vertices.Add(a);
@@ -203,12 +200,8 @@ public class LineModelReader : MonoBehaviour {
                 vertices.Add(f);
                 vertices.Add(g);
                 vertices.Add(h);
-                vertices.Add(i);
-                vertices.Add(j);
-                vertices.Add(k);
-                vertices.Add(l);
 
-                // Add uvs for these 12 vectors
+                // Add uvs for these 8 vectors
                 UVs.Add(new Vector2(vertices[vertCounter].x, vertices[vertCounter].z));
                 UVs.Add(new Vector2(vertices[vertCounter + 1].x, vertices[vertCounter + 1].z));
                 UVs.Add(new Vector2(vertices[vertCounter + 2].x, vertices[vertCounter + 2].z));
@@ -217,57 +210,39 @@ public class LineModelReader : MonoBehaviour {
                 UVs.Add(new Vector2(vertices[vertCounter + 5].x, vertices[vertCounter + 5].z));
                 UVs.Add(new Vector2(vertices[vertCounter + 6].x, vertices[vertCounter + 6].z));
                 UVs.Add(new Vector2(vertices[vertCounter + 7].x, vertices[vertCounter + 7].z));
-                UVs.Add(new Vector2(vertices[vertCounter + 8].x, vertices[vertCounter + 8].z));
-                UVs.Add(new Vector2(vertices[vertCounter + 9].x, vertices[vertCounter + 9].z));
-                UVs.Add(new Vector2(vertices[vertCounter + 10].x, vertices[vertCounter + 10].z));
-                UVs.Add(new Vector2(vertices[vertCounter + 11].x, vertices[vertCounter + 11].z));
 
                 // Add triangles for these 12 vectors
                 triangles.Add(vertCounter);
-                triangles.Add(vertCounter+6);
+                triangles.Add(vertCounter+4);
                 triangles.Add(vertCounter+1);
                 triangles.Add(vertCounter+1);
-                triangles.Add(vertCounter+6);
-                triangles.Add(vertCounter+7);
+                triangles.Add(vertCounter+4);
+                triangles.Add(vertCounter+5);
 
                 triangles.Add(vertCounter + 1);
-                triangles.Add(vertCounter + 7);
+                triangles.Add(vertCounter + 5);
                 triangles.Add(vertCounter + 2);
                 triangles.Add(vertCounter + 2);
-                triangles.Add(vertCounter + 7);
-                triangles.Add(vertCounter + 8);
-
-                triangles.Add(vertCounter + 2);
-                triangles.Add(vertCounter + 8);
-                triangles.Add(vertCounter + 3);
-                triangles.Add(vertCounter + 3);
-                triangles.Add(vertCounter + 8);
-                triangles.Add(vertCounter + 9);
-
-                triangles.Add(vertCounter + 3);
-                triangles.Add(vertCounter + 9);
-                triangles.Add(vertCounter + 4);
-                triangles.Add(vertCounter + 4);
-                triangles.Add(vertCounter + 9);
-                triangles.Add(vertCounter + 10);
-
-                triangles.Add(vertCounter + 4);
-                triangles.Add(vertCounter + 10);
                 triangles.Add(vertCounter + 5);
-                triangles.Add(vertCounter + 5);
-                triangles.Add(vertCounter + 10);
-                triangles.Add(vertCounter + 11);
-
-                triangles.Add(vertCounter + 5);
-                triangles.Add(vertCounter + 11);
-                triangles.Add(vertCounter);
-                triangles.Add(vertCounter);
-                triangles.Add(vertCounter + 11);
                 triangles.Add(vertCounter + 6);
+
+                triangles.Add(vertCounter + 2);
+                triangles.Add(vertCounter + 6);
+                triangles.Add(vertCounter + 3);
+                triangles.Add(vertCounter + 3);
+                triangles.Add(vertCounter + 6);
+                triangles.Add(vertCounter + 7);
+
+                triangles.Add(vertCounter + 3);
+                triangles.Add(vertCounter + 7);
+                triangles.Add(vertCounter);
+                triangles.Add(vertCounter);
+                triangles.Add(vertCounter + 7);
+                triangles.Add(vertCounter + 4);
 
 
                 // Increment vert counter
-                vertCounter += 12;
+                vertCounter += 8;
             }
 
 
@@ -329,7 +304,7 @@ public class LineModelReader : MonoBehaviour {
             mesh.RecalculateNormals();
 
 
-            UnityEditor.AssetDatabase.CreateAsset(mesh, "Assets/FullCortexModel/LineHex/MeshPartHex__" + m + ".asset");
+            UnityEditor.AssetDatabase.CreateAsset(mesh, "Assets/FullCortexModel/LineSquare/MeshPartSquare__" + m + ".asset");
 
             // Create lineSeg object
             GameObject lineSeg = Instantiate(m_LineSegPrefab);

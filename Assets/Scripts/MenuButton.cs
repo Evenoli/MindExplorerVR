@@ -4,12 +4,16 @@ using UnityEngine;
 
 public class MenuButton : MonoBehaviour {
 
-    public enum BUTTONFUNCTION { QUERY, MESSAGE, MODEL, BOX, HELP, OPTIONS };
+    public enum BUTTONFUNCTION { QUERY, MESSAGE, MODEL, BOX, HELP, OPTIONS, BACK };
 
     public GameObject m_BasicBacking;
     public GameObject m_HighlightBacking;
     public BUTTONFUNCTION m_function;
     public MenuManager m_MenuManager;
+
+    public GameObject m_MainMenu;
+    public GameObject m_OptionMenu;
+    public GameObject m_HelpMenu;
 
     // Other menu buttons that are deactivated when this one is activated
     public MenuButton[] m_ButtonGroup;
@@ -43,11 +47,19 @@ public class MenuButton : MonoBehaviour {
     {
         if(m_function == BUTTONFUNCTION.OPTIONS)
         {
-            //Options menu
+            m_OptionMenu.SetActive(true);
+            m_MainMenu.SetActive(false);
         }
         else if (m_function == BUTTONFUNCTION.HELP)
         {
-            // Help menu
+            m_HelpMenu.SetActive(true);
+            m_MainMenu.SetActive(false);
+        }
+        else if (m_function == BUTTONFUNCTION.BACK)
+        {
+            m_MainMenu.SetActive(true);
+            m_HelpMenu.SetActive(false);
+            m_OptionMenu.SetActive(false);
         }
         else
         {
