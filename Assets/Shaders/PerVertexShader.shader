@@ -9,13 +9,14 @@
 	{
 		Tags { "RenderType" = "Opaque" "Queue" = "Transparent" }
 		LOD 100
-		Cull Front
+		Cull Back
 		Lighting Off
-		ZWrite Off
+		ZWrite On
 		Blend SrcAlpha OneMinusSrcAlpha
 
 		Pass
 		{
+			Name "BASE"
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag

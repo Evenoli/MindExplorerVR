@@ -25,12 +25,12 @@ public class BoxMessage : MonoBehaviour {
         if (m_LeftController)
             m_LeftTrackedContr = m_LeftController.GetComponent<SteamVR_TrackedController>();
         else
-            print("ERROR: Missing left controller reference in MessageQuery!");
+            print("ERROR: Missing left controller reference in MessageBox!");
 
         if (m_RightController)
             m_RightTrackedContr = m_RightController.GetComponent<SteamVR_TrackedController>();
         else
-            print("ERROR: Missing right controller reference in MessageQuery!");
+            print("ERROR: Missing right controller reference in MessageBox!");
 
         if (!m_LeftTrackedContr || !m_RightTrackedContr)
             print("ERROR: Couldn't retrieve vrTracked controller components. Make sure they're attached to both controllers");

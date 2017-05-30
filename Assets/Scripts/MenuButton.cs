@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MenuButton : MonoBehaviour {
 
-    public enum BUTTONFUNCTION { QUERY, MESSAGE, MODEL, BOX, HELP, OPTIONS, BACK };
+    public enum BUTTONFUNCTION { QUERY, MESSAGE, MODEL, BOX, HELP, OPTIONS, BACK, CONNECTIVITY };
 
     public GameObject m_BasicBacking;
     public GameObject m_HighlightBacking;

@@ -127,15 +127,19 @@ public class LineModelReader : MonoBehaviour {
 
     public void BuildLineMeshes()
     {
+        // Clear any existing mesh objects
+        for (int i = 0; i < m_LineModelObj.transform.childCount; i++)
+        {
+            Destroy(m_LineModelObj.transform.GetChild(i).gameObject);
+        }
+
         numVerts = lines.Count;
 
         meshes = new List<Mesh>();
         meshParts = new List<GameObject>();
 
-        //float lineWidth = 0.002f;
         float lineWidth = 2.5f;
 
-        //int numMeshesRequired = (numVerts / ((MAX_VERTICES_PER_MESH / 2) - 1)) + 1;
         int numMeshesRequired = (numVerts / ((MAX_VERTICES_PER_MESH / 4) - 1)) + 1;
 
         // Per mesh m
@@ -146,12 +150,6 @@ public class LineModelReader : MonoBehaviour {
             List<Vector3> vertices = new List<Vector3>();
             List<Vector2> UVs = new List<Vector2>();
             List<int> triangles = new List<int>();
-
-            // Clear any existing mesh objects
-            for(int i=0; i < m_LineModelObj.transform.childCount; i++)
-            {
-                Destroy(m_LineModelObj.transform.GetChild(i).gameObject);
-            }
 
             // Create list of vert ids that will be in current mesh
             List<int> vs = new List<int>();
@@ -213,32 +211,43 @@ public class LineModelReader : MonoBehaviour {
 
                 // Add triangles for these 12 vectors
                 triangles.Add(vertCounter);
+                triangles.Add(vertCounter + 1);
                 triangles.Add(vertCounter+4);
+
                 triangles.Add(vertCounter+1);
-                triangles.Add(vertCounter+1);
+                triangles.Add(vertCounter + 5);
                 triangles.Add(vertCounter+4);
-                triangles.Add(vertCounter+5);
+                
 
                 triangles.Add(vertCounter + 1);
-                triangles.Add(vertCounter + 5);
-                triangles.Add(vertCounter + 2);
                 triangles.Add(vertCounter + 2);
                 triangles.Add(vertCounter + 5);
-                triangles.Add(vertCounter + 6);
+                
 
                 triangles.Add(vertCounter + 2);
                 triangles.Add(vertCounter + 6);
-                triangles.Add(vertCounter + 3);
+                triangles.Add(vertCounter + 5);
+                
+
+                triangles.Add(vertCounter + 2);
                 triangles.Add(vertCounter + 3);
                 triangles.Add(vertCounter + 6);
-                triangles.Add(vertCounter + 7);
+                
 
                 triangles.Add(vertCounter + 3);
                 triangles.Add(vertCounter + 7);
-                triangles.Add(vertCounter);
+                triangles.Add(vertCounter + 6);
+                
+
+                triangles.Add(vertCounter + 3);
                 triangles.Add(vertCounter);
                 triangles.Add(vertCounter + 7);
+                
+
+                triangles.Add(vertCounter);
                 triangles.Add(vertCounter + 4);
+                triangles.Add(vertCounter + 7);
+                
 
 
                 // Increment vert counter

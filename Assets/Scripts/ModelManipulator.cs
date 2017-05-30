@@ -23,6 +23,7 @@ public class ModelManipulator : MonoBehaviour {
     // WHich control mode allows for this manipulation
     public ControlModeManager.CONTROL_MODE m_activeMode;
     public ControlModeManager.CONTROL_MODE m_secondActiveMode;
+    public ControlModeManager.CONTROL_MODE m_thirdActiveMode;
     public ControlModeManager m_controlManager;
 
     private enum SIDE {LEFT, RIGHT };
@@ -160,7 +161,9 @@ public class ModelManipulator : MonoBehaviour {
     void Update () {
 
         // If we're in wrong control mode, return
-        if (m_controlManager.GetCurrentControlMode() != m_activeMode && m_controlManager.GetCurrentControlMode() != m_secondActiveMode)
+        if (m_controlManager.GetCurrentControlMode() != m_activeMode 
+            && m_controlManager.GetCurrentControlMode() != m_secondActiveMode 
+            && m_controlManager.GetCurrentControlMode() != m_thirdActiveMode)
             return;
 
         // We're in move/rotate mode

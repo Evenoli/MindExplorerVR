@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ControlModeManager : MonoBehaviour {
 
-    public enum CONTROL_MODE { QUERY_MODEL, QUERY_BOX,  MESSAGE_MODEL, MESSAGE_BOX };
+    public enum CONTROL_MODE { QUERY_MODEL, QUERY_BOX,  MESSAGE_MODEL, MESSAGE_BOX, CONNECTIVITY_MODEL, CONNECTIVITY_BOX };
     private CONTROL_MODE m_curControlMode;
 
     public GameObject m_LeftController;
@@ -56,7 +56,7 @@ public class ControlModeManager : MonoBehaviour {
 
     private void ToggleMode()
     {
-        m_curControlMode = (CONTROL_MODE)(((int)m_curControlMode + 1) % 4);
+        m_curControlMode = (CONTROL_MODE)(((int)m_curControlMode + 1) % 6);
 
         SetCorrectModel();
     }
@@ -130,6 +130,30 @@ public class ControlModeManager : MonoBehaviour {
                 m_CortexDrawer.SetModelToLineScale();
             }
         }
+        else if (m_curControlMode == CONTROL_MODE.CONNECTIVITY_MODEL)
+        {
+            m_ScreenDisplay.SetConnectivityMode();
+            m_ScreenDisplay.SetModelControl();
+            m_LineModel.GetComponent<FullLineModelRenderer>().StartFadeIn();
+            m_CortexDrawer.StartQueryFadeOut();
+
+            if (m_CortexDrawer.IsQueryShown())
+            {
+                m_CortexDrawer.SetModelToLineScale();
+            }
+        }
+        else if (m_curControlMode == CONTROL_MODE.CONNECTIVITY_BOX)
+        {
+            m_ScreenDisplay.SetConnectivityMode();
+            m_ScreenDisplay.SetBoxControl();
+            m_LineModel.GetComponent<FullLineModelRenderer>().StartFadeIn();
+            m_CortexDrawer.StartQueryFadeOut();
+
+            if (m_CortexDrawer.IsQueryShown())
+            {
+                m_CortexDrawer.SetModelToLineScale();
+            }
+        }
     }
 
     public CONTROL_MODE GetCurrentControlMode()
@@ -141,7 +165,6 @@ public class ControlModeManager : MonoBehaviour {
     {
         m_curControlMode = mode;
         SetCorrectModel();
-
     }
        
 }

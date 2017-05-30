@@ -14,12 +14,20 @@ public class FullLineModelRenderer : MonoBehaviour {
 
     public Color m_defaultVertexCol = new Color(0.0f, 0.0f, 1.0f, 1.0f);
     public Color m_activatedvertexCol = new Color(1.0f, 0.0f, 0.0f, 1.0f);
+    public Color m_connectivityVertexCol;
+    public Color m_connectivityOutlineCol;
+
+    // Game object containing meshes used to give an 'outline' effect during connectivity mode
+    public GameObject m_OutlineModelObj;
 
     private const int MAX_VERTICES_PER_MESH = 64998;
     private int MaxVertIndexPerMesh = ((MAX_VERTICES_PER_MESH / 4) - 1);
 
     // Number of steps taken for vertices to fade back to original colour
     public int m_steps;
+
+    // Range of connectivity shown
+    public int m_connectionRange;
 
     //Controls speed of message (bigger number = slower)
     public int m_iterationDelay;
@@ -39,8 +47,12 @@ public class FullLineModelRenderer : MonoBehaviour {
     private List<int> m_vertexState;
     // List of current colours for each vertex
     private List<Color> m_VertexColours;
-    // List of all mesh parts game objects
+    // List of current colours for the 'outline' model
+    private List<Color> m_OutlineColours;
+    // List of all mesh parts vertex managers
     private VertexManager[] m_VertexManagers;
+    // list of all vertex managers for the 'outline' model
+    private VertexManager[] m_OutlineVertexManagers;
     // List of all currently active vertices
     private List<int> m_activeVerts;
     // List of all vertices activated on this message iteration
@@ -86,15 +98,28 @@ public class FullLineModelRenderer : MonoBehaviour {
             m_VertexManagers[meshID] = vd;
         }
 
+        // do the same for the 'outline' model
+        m_OutlineVertexManagers = new VertexManager[m_numMeshes];
+        foreach (VertexManager vd in m_OutlineModelObj.transform.GetComponentsInChildren<VertexManager>())
+        {
+            int meshID = vd.m_MeshID;
+            m_OutlineVertexManagers[meshID] = vd;
+        }
+
         // Get Vertex and Adjacancy data from reader
         m_verts = m_LineModelReader.GetVertices();
         m_adj = m_LineModelReader.GetAdjData();
 
         // Initialise colour list
         m_VertexColours = new List<Color>();
-        for(int i = 0; i < m_numVerts*4; i++)
+        m_OutlineColours = new List<Color>();
+        for (int i = 0; i < m_numVerts*4; i++)
         {
+            // Colour main model with given colour
             m_VertexColours.Add(m_defaultVertexCol);
+
+            // Set 'outline' to transparent
+            m_OutlineColours.Add(new Color(0, 0, 0, 0));
         }
 
         m_iterationCounter = 0;
@@ -230,12 +255,16 @@ public class FullLineModelRenderer : MonoBehaviour {
             VertexManager vm = m_VertexManagers[i];
             int meshVertCount = vm.m_VertexIDs.Count*4;
             vm.SetMeshCols(m_VertexColours.GetRange(MaxVertIndexPerMesh * i * 4, meshVertCount));
+
+            VertexManager vmOutline = m_OutlineVertexManagers[i];
+            vmOutline.SetMeshCols(m_OutlineColours.GetRange(MaxVertIndexPerMesh * i * 4, meshVertCount));
         }
     }
 
     // Resets state and colour of all vertices
     private void ResetMessage()
     {
+        m_messagingActive = false;
         for (int i = 0; i < m_vertexState.Count; i++)
         {
             m_vertexState[i] = -2;
@@ -243,7 +272,8 @@ public class FullLineModelRenderer : MonoBehaviour {
             for (int j = 0; j < vs.Length; j++)
             {
                 m_VertexColours[vs[j]] = m_defaultVertexCol;
-                m_VertexColours[vs[j]] = m_defaultVertexCol;
+
+                m_OutlineColours[vs[j]] = new Color(0, 0, 0, 0);
             }
         }
 
@@ -312,5 +342,74 @@ public class FullLineModelRenderer : MonoBehaviour {
         }
 
         m_iterationCounter++;
+    }
+
+    public void ShowConnectivity(Vector3 lowerCorner, Vector3 upperCorner)
+    {
+        ResetMessage();
+
+        List<int> activeVerts = new List<int>();
+        List<int> newActiveVerts = new List<int>();
+        bool done = false;
+
+        // Check all verts for those in initial cube
+        for (int i = 0; i < m_numVerts; i++)
+        {
+            if (IsWithinCube(m_verts[i], lowerCorner, upperCorner))
+            {
+                activeVerts.Add(i);
+                // Using state of -3 to indicate vertex has been reached
+                m_vertexState[i] = -3;
+            }
+        }
+
+        int range = 0;
+
+        while (!done && range <= m_connectionRange)
+        {
+            //Run through all active vertices and Set colours
+            for (int i = 0; i < activeVerts.Count; i++)
+            {
+                int vert = activeVerts[i];
+
+                int numNeighbours = m_adj[vert].Count;
+                if (numNeighbours > 3)
+                    range++;
+
+                // for each adjacent vertex
+                for (int j = 0; j < numNeighbours; j++)
+                {
+                    int neighbour = m_adj[vert][j];
+                    //If neighbour inactive, activate it
+                    if (m_vertexState[neighbour] == -2)
+                    {
+                        // Using state of -3 to indicate vertex has been reached
+                        m_vertexState[neighbour] = -3;
+                        newActiveVerts.Add(neighbour);
+                    }
+                }
+
+                // Set colour of vertex to 'connected' and enable outline of that vertex
+                int[] vs = FileIndexToVertexIndex(vert);
+                for (int j = 0; j < vs.Length; j++)
+                {
+                    m_VertexColours[vs[j]] = m_connectivityVertexCol;
+                    m_OutlineColours[vs[j]] = m_connectivityOutlineCol;
+                }
+            }
+
+            // clear active verts and replace with new active verts
+            activeVerts.Clear();
+            activeVerts.AddRange(newActiveVerts);
+            newActiveVerts.Clear();
+
+            if (activeVerts.Count == 0)
+            {
+                done = true;
+            }
+
+        }
+
+        SetVertexColours();
     }
 }

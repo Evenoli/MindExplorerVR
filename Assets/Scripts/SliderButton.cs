@@ -9,7 +9,7 @@ public class SliderButton : MonoBehaviour {
     public MenuManager m_MenuManager;
 
     public SLIDERFUNCTION m_function;
-    public enum SLIDERFUNCTION { MESSAGELENGTH, MESSAGESPEED }
+    public enum SLIDERFUNCTION { MESSAGELENGTH, MESSAGESPEED, CONNECTIONRANGE }
 
     private bool m_attatched;
     private GameObject m_attatchedObj;
@@ -65,19 +65,6 @@ public class SliderButton : MonoBehaviour {
             m_HighlightBacking.SetActive(false);
         }
     }
-
-    /*
-    private void OnTriggerStay(Collider other)
-    {
-        if (other.gameObject.tag == "Finger")
-        {
-            transform.localPosition = transform.InverseTransformPoint(other.transform.TransformPoint(other.transform.localPosition));
-            print(transform.InverseTransformPoint(other.transform.TransformPoint(other.transform.localPosition)));
-            float z = Mathf.Clamp(transform.localPosition.z, -5, 5);
-            transform.localPosition = new Vector3(0, 0, z);
-        }
-    }
-    */
 
     private void Function(float val)
     {

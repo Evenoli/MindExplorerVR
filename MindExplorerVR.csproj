@@ -139,6 +139,7 @@
     <Compile Include="Assets\NewtonVR\SteamVR\NVRSteamVRIntegration.cs" />
     <Compile Include="Assets\Scripts\BoxMessage.cs" />
     <Compile Include="Assets\Scripts\BoxQuery.cs" />
+    <Compile Include="Assets\Scripts\ConnectivityBox.cs" />
     <Compile Include="Assets\Scripts\ControlModeManager.cs" />
     <Compile Include="Assets\Scripts\CoordinateConvertion.cs" />
     <Compile Include="Assets\Scripts\CortexDrawer.cs" />
@@ -275,6 +276,9 @@
     <None Include="Assets\Shaders\Multiply by Solid Color.shader" />
     <None Include="Assets\Shaders\OutlinedDiffuse.shader" />
     <None Include="Assets\Shaders\PerVertexShader.shader" />
+    <None Include="Assets\Shaders\PerVertexShaderGlow.shader" />
+    <None Include="Assets\Shaders\SilhouetteOnly.shader" />
+    <None Include="Assets\Shaders\SilhouettedDiffuse.shader" />
     <None Include="Assets\Shaders\TransparentUnlit.shader" />
     <None Include="Assets\Shaders\WristMenuBacking.shader" />
     <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\MobileBlur.shader" />
