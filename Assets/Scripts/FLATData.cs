@@ -5,9 +5,7 @@ using System.Threading;
 using System.Runtime.InteropServices;
 using System;
 using System.IO;
-using UnityEditor;
 
-[InitializeOnLoad]
 public static class FLATData {
 
     public struct FlatRes

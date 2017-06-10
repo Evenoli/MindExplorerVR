@@ -11,12 +11,14 @@ public class CortexDrawer : MonoBehaviour {
     public GameObject m_MeshParts;
     public GameObject m_FullLineModel;
     public GameObject m_QueryBox;
+    public GameObject m_MessageBox;
+    public GameObject m_ConnectivityBox;
     public Flash m_queryBoxFlash;
     public NewtonVR.NVRButton m_ResetButton;
     public Display m_ScreenDisplay;
 
-    private bool m_fadingOut;
-    private bool m_fadingIn;
+    //private bool m_fadingOut;
+    //private bool m_fadingIn;
 
     public float m_fadeRate;
 
@@ -50,6 +52,7 @@ public class CortexDrawer : MonoBehaviour {
     private Quaternion m_DefaultModelRotation;
     private float m_defaultNewQueryScale = 1000;
 
+    /*
     // Is scale/position transition in progress?
     private bool m_transitionActive;
     // Rate at which scale/position transition takes place
@@ -68,7 +71,7 @@ public class CortexDrawer : MonoBehaviour {
     private Quaternion m_TransDestRot;
     private Vector3 m_TransDestMeshPartsPos;
     private Vector3 m_TransDestQueryBoxPos;
-
+    */
 
     // Used to time queries 
     private System.Diagnostics.Stopwatch m_watch;
@@ -92,8 +95,8 @@ public class CortexDrawer : MonoBehaviour {
         m_queryInProgress = false;
         m_QueryShown = false;
 
-        m_fadingOut = false;
-        m_fadingIn = false;
+        //m_fadingOut = false;
+        //m_fadingIn = false; 
 
         // Set default query center coords
         m_DefaultQueryCenter = m_FullLineModel.transform.localPosition * -1;
@@ -119,7 +122,15 @@ public class CortexDrawer : MonoBehaviour {
 
         m_QueryBox.transform.localPosition = Vector3.zero;
         m_QueryBox.transform.localEulerAngles = Vector3.zero;
-        m_QueryBox.transform.localScale = new Vector3(1000f, 1000f, 1000f);
+        m_QueryBox.transform.localScale = new Vector3(500f, 500f, 500f);
+
+        m_MessageBox.transform.localPosition = Vector3.zero;
+        m_MessageBox.transform.localEulerAngles = Vector3.zero;
+        m_MessageBox.transform.localScale = new Vector3(200f, 200f, 200f);
+
+        m_ConnectivityBox.transform.localPosition = Vector3.zero;
+        m_ConnectivityBox.transform.localEulerAngles = Vector3.zero;
+        m_ConnectivityBox.transform.localScale = new Vector3(200f, 200f, 200f);
 
         print("Destroying old mesh..");
         foreach (GameObject mesh in m_MeshModelParts)
@@ -325,6 +336,7 @@ public class CortexDrawer : MonoBehaviour {
         print("Done");
     }
 
+    /*
     private void ModelTransition()
     {
         m_transitionActive = true;
@@ -344,7 +356,7 @@ public class CortexDrawer : MonoBehaviour {
 
         m_TransistionProg = 0;
     }
-        
+    */
 
     public bool IsQueryShown()
     {

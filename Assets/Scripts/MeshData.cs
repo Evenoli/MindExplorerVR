@@ -19,7 +19,7 @@ public static class MeshData  {
     public static void SaveMeshInfo(MeshInfo mi)
     {
         BinaryFormatter binary = new BinaryFormatter();        
-        FileStream fStream = File.Create(Application.dataPath + "/Data/MeshInfo.minfo");
+        FileStream fStream = File.Create(Application.dataPath + "/StreamingAssets/MeshInfo.minfo");
         binary.Serialize(fStream, mi);
         fStream.Close();
     }
@@ -27,10 +27,10 @@ public static class MeshData  {
     public static MeshInfo LoadMeshInfo()
     {
         MeshInfo mi;
-        if (File.Exists(Application.dataPath + "/Data/MeshInfo.minfo"))
+        if (File.Exists(Application.dataPath + "/StreamingAssets/MeshInfo.minfo"))
         {
             BinaryFormatter binary = new BinaryFormatter();
-            FileStream fStream = File.Open(Application.dataPath + "/Data/MeshInfo.minfo", FileMode.Open);
+            FileStream fStream = File.Open(Application.dataPath + "/StreamingAssets/MeshInfo.minfo", FileMode.Open);
             mi = (MeshInfo)binary.Deserialize(fStream);
             fStream.Close();
         }

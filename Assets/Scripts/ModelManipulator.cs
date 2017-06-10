@@ -130,8 +130,8 @@ public class ModelManipulator : MonoBehaviour {
         m_MoveModeActive = false;
         m_ScaleModeActive = true;
 
-        Vector3 leftPos = m_LeftController.transform.localPosition;
-        Vector3 rightPos = m_RightController.transform.localPosition;
+        Vector3 leftPos = m_LeftController.transform.position;
+        Vector3 rightPos = m_RightController.transform.position;
         m_startingDist = Vector3.Distance(leftPos, rightPos);
         m_startingScale = transform.localScale;
     }
@@ -141,19 +141,19 @@ public class ModelManipulator : MonoBehaviour {
         m_MoveModeActive = true;
         m_ScaleModeActive = false;
 
-        m_startingModelRotation = transform.localRotation;
-        m_startingModelPos = transform.localPosition;
+        m_startingModelRotation = transform.rotation;
+        m_startingModelPos = transform.position;
         m_rotatingHand = side;
 
         if (side == SIDE.LEFT)
         {
-            m_startingControllerRotation = m_LeftController.transform.localRotation;
-            m_startingControllerPos = m_LeftController.transform.localPosition;
+            m_startingControllerRotation = m_LeftController.transform.rotation;
+            m_startingControllerPos = m_LeftController.transform.position;
         }
         else
         {
-            m_startingControllerRotation = m_RightController.transform.localRotation;
-            m_startingControllerPos = m_RightController.transform.localPosition;
+            m_startingControllerRotation = m_RightController.transform.rotation;
+            m_startingControllerPos = m_RightController.transform.position;
         }
     }
 
@@ -174,14 +174,14 @@ public class ModelManipulator : MonoBehaviour {
             bool rotateEnabled = false;
             if (m_rotatingHand == SIDE.LEFT)
             {
-                curContrRot = m_LeftController.transform.localRotation;
-                curContrPos = m_LeftController.transform.localPosition;
+                curContrRot = m_LeftController.transform.rotation;
+                curContrPos = m_LeftController.transform.position;
                 rotateEnabled = m_LeftTrackedContr.triggerPressed;
             }
             else
             {
-                curContrRot = m_RightController.transform.localRotation;
-                curContrPos = m_RightController.transform.localPosition;
+                curContrRot = m_RightController.transform.rotation;
+                curContrPos = m_RightController.transform.position;
                 rotateEnabled = m_RightTrackedContr.triggerPressed;
             }
 
@@ -205,7 +205,7 @@ public class ModelManipulator : MonoBehaviour {
                     m_moveFactor = GetMoveScale(modelScale);
 
                 }
-                transform.localPosition = m_startingModelPos + posDiff * m_moveFactor;
+                transform.position = m_startingModelPos + posDiff * m_moveFactor;
 
             }
             

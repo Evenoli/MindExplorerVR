@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 public class FullMeshCreator : MonoBehaviour {
@@ -133,12 +132,12 @@ public class FullMeshCreator : MonoBehaviour {
                 meshPart.transform.SetParent(fullModel.transform);
 
                 //UnityEditor.AssetDatabase.CreateAsset(mesh, "Assets/FullCortexModel/Small/MeshPart_small_" + i.ToString() + ".asset");
-                UnityEditor.AssetDatabase.CreateAsset(mesh, "Assets/FullCortexModel/Test3/MeshPart_test3_" + i.ToString() + ".asset");
+                //UnityEditor.AssetDatabase.CreateAsset(mesh, "Assets/FullCortexModel/Test3/MeshPart_test3_" + i.ToString() + ".asset");
 
 
             }
-            UnityEditor.AssetDatabase.SaveAssets();
-            PrefabUtility.ReplacePrefab(fullModel, m_FullModelPrefab, ReplacePrefabOptions.ConnectToPrefab);
+            //UnityEditor.AssetDatabase.SaveAssets();
+            //PrefabUtility.ReplacePrefab(fullModel, m_FullModelPrefab, ReplacePrefabOptions.ConnectToPrefab);
             print("Done");
 
             print("vertex count: " + vertexCount.ToString());

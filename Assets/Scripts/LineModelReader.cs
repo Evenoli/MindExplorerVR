@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-using UnityEditor;
 
 
 
@@ -14,8 +13,8 @@ public class LineModelReader : MonoBehaviour {
 
     public Material m_meshMat;
 
-    private string m_lineModelFile = "\\Data\\neocortex_s.txt";
-    private string m_adjModelFile = "\\Data\\neocortex_s_adj.txt";
+    private string m_lineModelFile = "\\StreamingAssets\\neocortex_s.txt";
+    private string m_adjModelFile = "\\StreamingAssets\\neocortex_s_adj.txt";
 
     private const int MAX_VERTICES_PER_MESH = 64998;
 
@@ -314,7 +313,7 @@ public class LineModelReader : MonoBehaviour {
             mesh.RecalculateNormals();
 
 
-            UnityEditor.AssetDatabase.CreateAsset(mesh, "Assets/FullCortexModel/LineSquare/MeshPartSquare__" + m + ".asset");
+            //UnityEditor.AssetDatabase.CreateAsset(mesh, "Assets/FullCortexModel/LineSquare/MeshPartSquare__" + m + ".asset");
 
             // Create lineSeg object
             GameObject lineSeg = Instantiate(m_LineSegPrefab);
@@ -338,7 +337,7 @@ public class LineModelReader : MonoBehaviour {
 
         }
 
-        PrefabUtility.ReplacePrefab(m_LineModelObj, m_lineModelPrefab, ReplacePrefabOptions.ConnectToPrefab);
+        //PrefabUtility.ReplacePrefab(m_LineModelObj, m_lineModelPrefab, ReplacePrefabOptions.ConnectToPrefab);
 
         MeshInfo meshInf = new MeshInfo();
         meshInf.numVerts = numVerts;
