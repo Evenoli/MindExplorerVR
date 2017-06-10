@@ -27,7 +27,7 @@ Shader "Outlined/Silhouette Only" {
 	ENDCG
 
 		SubShader{
-		Tags{ "Queue" = "Transparent + 1" }
+		Tags{ "Queue" = "Geometry" }
 
 		Pass
 	{

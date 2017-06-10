@@ -121,7 +121,8 @@ public class LineModelReader : MonoBehaviour {
                 }
                 valList.Add(v);
             }
-            adj.Add(valList);
+            if(valList.Count > 0)
+                adj.Add(valList);
         }
     }
 

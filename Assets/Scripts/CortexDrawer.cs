@@ -4,7 +4,6 @@ using UnityEngine;
 using System.Threading;
 using System.Runtime.InteropServices;
 using System.IO;
-using UnityEditor;
 
 public class CortexDrawer : MonoBehaviour {
 
@@ -69,6 +68,12 @@ public class CortexDrawer : MonoBehaviour {
     private Quaternion m_TransDestRot;
     private Vector3 m_TransDestMeshPartsPos;
     private Vector3 m_TransDestQueryBoxPos;
+
+
+    // Used to time queries 
+    private System.Diagnostics.Stopwatch m_watch;
+    private long m_QueryTime;
+
 
     // Use this for initialization
     void Start () {
@@ -184,7 +189,10 @@ public class CortexDrawer : MonoBehaviour {
 
     private void QueryThread(float p0, float p1, float p2, float p3, float p4, float p5)
     {
+        m_watch = System.Diagnostics.Stopwatch.StartNew();
         m_latestCortexData = FLATData.Query(p0, p1, p2, p3, p4, p5);
+        m_watch.Stop();
+        m_QueryTime = m_watch.ElapsedMilliseconds;
         m_renderDue = true;
     }
 
@@ -229,6 +237,8 @@ public class CortexDrawer : MonoBehaviour {
         //print("Max: " + max.ToString());
 
         int vertexCount = cortexVertices.Count;
+
+        m_watch = System.Diagnostics.Stopwatch.StartNew();
 
         if (vertexCount > 0)
         {
@@ -291,6 +301,8 @@ public class CortexDrawer : MonoBehaviour {
             }
         }
 
+        print("Model build Time: " + m_watch.ElapsedMilliseconds);
+
         // Center the new model
         m_MeshParts.transform.localPosition = -1 * m_QueryCenter;
         m_QueryBox.transform.localPosition = Vector3.zero;
@@ -341,24 +353,29 @@ public class CortexDrawer : MonoBehaviour {
 
     public void StartQueryFadeOut()
     {
-        m_fadingOut = true;
-        m_fadingIn = false;
+        m_MeshParts.SetActive(false);
+        //m_fadingOut = true;
+        //m_fadingIn = false;
     }
 
     public void StartQueryFadeIn()
     {
-        m_fadingIn = true;
-        m_fadingOut = false;
+       // m_fadingIn = true;
+       // m_fadingOut = false;
+        m_MeshParts.SetActive(true);
     }
 
     // Update is called once per frame
     void Update () {
         if (m_renderDue)
         {
+            print("Query time: " + m_QueryTime);
+            print("Number of ordinates returned: " + m_latestCortexData.numcoords);
             DrawModel(m_latestCortexData);
             m_renderDue = false;
         }
 
+        /*
         if(m_fadingOut)
         {
             float lastA = 0;
@@ -385,6 +402,7 @@ public class CortexDrawer : MonoBehaviour {
                 m_fadingIn = false;
         }
 
+
         if(m_transitionActive)
         {
             // lerp between old and new. Stop when transProg >= 1
@@ -400,5 +418,6 @@ public class CortexDrawer : MonoBehaviour {
             if(m_TransistionProg >= 1)
                 m_transitionActive = false;
         }
+        */
     }
 }

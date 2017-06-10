@@ -27,8 +27,7 @@ public static class FLATData {
 #elif UNITY_EDITOR_64
         var dllPath = Application.dataPath + "/Plugins/";
 #else // Player
-    var dllPath = Application.dataPath
-        + Path.DirectorySeparatorChar + "Plugins";
+    var dllPath = Application.dataPath + "/Plugins/";
 
 #endif
         if (currentPath != null && currentPath.Contains(dllPath) == false)

@@ -7,8 +7,6 @@ using UnityEditor;
 public class FullLineModelRenderer : MonoBehaviour {
 
     private bool m_messagingActive;
-    private bool m_fadingOut;
-    private bool m_fadingIn;
 
     public float m_fadeRate;
 
@@ -52,7 +50,7 @@ public class FullLineModelRenderer : MonoBehaviour {
     // List of all mesh parts vertex managers
     private VertexManager[] m_VertexManagers;
     // list of all vertex managers for the 'outline' model
-    private VertexManager[] m_OutlineVertexManagers;
+    //private VertexManager[] m_OutlineVertexManagers;
     // List of all currently active vertices
     private List<int> m_activeVerts;
     // List of all vertices activated on this message iteration
@@ -99,12 +97,12 @@ public class FullLineModelRenderer : MonoBehaviour {
         }
 
         // do the same for the 'outline' model
-        m_OutlineVertexManagers = new VertexManager[m_numMeshes];
-        foreach (VertexManager vd in m_OutlineModelObj.transform.GetComponentsInChildren<VertexManager>())
-        {
-            int meshID = vd.m_MeshID;
-            m_OutlineVertexManagers[meshID] = vd;
-        }
+        //m_OutlineVertexManagers = new VertexManager[m_numMeshes];
+        //foreach (VertexManager vd in m_OutlineModelObj.transform.GetComponentsInChildren<VertexManager>())
+        //{
+        //    int meshID = vd.m_MeshID;
+        //    m_OutlineVertexManagers[meshID] = vd;
+        //}
 
         // Get Vertex and Adjacancy data from reader
         m_verts = m_LineModelReader.GetVertices();
@@ -125,9 +123,6 @@ public class FullLineModelRenderer : MonoBehaviour {
         m_iterationCounter = 0;
 
         SetVertexColours();
-
-        m_fadingOut = false;
-        m_fadingIn = false;
 
         print("Loaded data successfully!");
     }
@@ -155,7 +150,7 @@ public class FullLineModelRenderer : MonoBehaviour {
     }
 
     // Perform one iteration of message propagation
-    private void IterateMessage()
+    public void IterateMessage()
     {
         m_newActiveVerts = new List<int>();
         List<int> completeVerts = new List<int>();
@@ -256,15 +251,16 @@ public class FullLineModelRenderer : MonoBehaviour {
             int meshVertCount = vm.m_VertexIDs.Count*4;
             vm.SetMeshCols(m_VertexColours.GetRange(MaxVertIndexPerMesh * i * 4, meshVertCount));
 
-            VertexManager vmOutline = m_OutlineVertexManagers[i];
-            vmOutline.SetMeshCols(m_OutlineColours.GetRange(MaxVertIndexPerMesh * i * 4, meshVertCount));
+            //VertexManager vmOutline = m_OutlineVertexManagers[i];
+            //vmOutline.SetMeshCols(m_OutlineColours.GetRange(MaxVertIndexPerMesh * i * 4, meshVertCount));
         }
     }
 
     // Resets state and colour of all vertices
-    private void ResetMessage()
+    public void ResetMessage()
     {
         m_messagingActive = false;
+        m_newActiveVerts = new List<int>();
         for (int i = 0; i < m_vertexState.Count; i++)
         {
             m_vertexState[i] = -2;
@@ -281,7 +277,7 @@ public class FullLineModelRenderer : MonoBehaviour {
     }
 
     // Returns true if given vector a is within the cube made by corners lowerc and upperc
-    private bool IsWithinCube(Vector3 a, Vector3 lowerc, Vector3 upperc)
+    public bool IsWithinCube(Vector3 a, Vector3 lowerc, Vector3 upperc)
     {
         return
             a.x >= lowerc.x && a.x <= upperc.x
@@ -290,7 +286,7 @@ public class FullLineModelRenderer : MonoBehaviour {
     }
 
     // Converts from vertex index in data file to vertex index used with meshes
-    private int[] FileIndexToVertexIndex(int fileInd)
+    public int[] FileIndexToVertexIndex(int fileInd)
     {
         int[] res = new int[4];
         for(int i = 0; i < 4; i++)
@@ -299,16 +295,16 @@ public class FullLineModelRenderer : MonoBehaviour {
         return res;
     }
 
+    // No longer face in/out due to line model shader behaving oddly with 
+    // transparency
     public void StartFadeOut()
     {
-        m_fadingOut = true;
-        m_fadingIn = false;
+        gameObject.SetActive(false);
     }
 
     public void StartFadeIn()
     {
-        m_fadingIn = true;
-        m_fadingOut = false;
+        gameObject.SetActive(true);
     }
 
     void Update()
@@ -317,28 +313,6 @@ public class FullLineModelRenderer : MonoBehaviour {
         {
             IterateMessage();
             m_iterationCounter = 0;
-        }
-
-        if(m_fadingOut)
-        {
-            foreach (Renderer r in GetComponentsInChildren<Renderer>())
-            {
-                r.material.color -= new Color(0, 0, 0, m_fadeRate);
-                if (r.material.color.a <= 0)
-                    m_fadingOut = false;
-            }
-
-
-            }
-
-        if(m_fadingIn)
-        {
-            foreach (Renderer r in GetComponentsInChildren<Renderer>())
-            {
-                r.material.color += new Color(0, 0, 0, m_fadeRate);
-                if (r.material.color.a >= 1)
-                    m_fadingIn = false;
-            }
         }
 
         m_iterationCounter++;
@@ -412,4 +386,26 @@ public class FullLineModelRenderer : MonoBehaviour {
 
         SetVertexColours();
     }
+
+    // For testing
+    public int GetNumVerts()
+    {
+        return m_numVerts;
+    }
+
+    public int GetNumMeshes()
+    {
+        return m_numMeshes;
+    }
+
+    public int GetAdjListLength()
+    {
+        return m_adj.Count;
+    }
+
+    public int GetNumActiveVerts()
+    {
+        return m_activeVerts.Count;
+    }
+
 }

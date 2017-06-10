@@ -94,7 +94,7 @@ public class ModelManipulator : MonoBehaviour {
     {
         if (gripped)
         {
-            //Other hand is already rotating. switch to scale
+            //Other hand is already moving. switch to scale
             if (m_MoveModeActive)
             {
                 InitScaleMode();
@@ -104,10 +104,10 @@ public class ModelManipulator : MonoBehaviour {
             {
                 print("Gripped while scaling...");
             }
-            // Else must be first hand to grip. begin rotation
+            // Else must be first hand to grip. begin moving
             else
             {
-                InitRotateMode(side);
+                InitMoveMode(side);
             }
         }
         else
@@ -115,7 +115,7 @@ public class ModelManipulator : MonoBehaviour {
             //hand released. Now rotating with other hand.
             if(m_ScaleModeActive)
             {
-                InitRotateMode((SIDE)Math.Abs((int)side - 1));
+                InitMoveMode((SIDE)Math.Abs((int)side - 1));
             }
             // Stop rotating
             else if(m_MoveModeActive && m_rotatingHand==side)
@@ -136,7 +136,7 @@ public class ModelManipulator : MonoBehaviour {
         m_startingScale = transform.localScale;
     }
 
-    private void InitRotateMode(SIDE side)
+    private void InitMoveMode(SIDE side)
     {
         m_MoveModeActive = true;
         m_ScaleModeActive = false;

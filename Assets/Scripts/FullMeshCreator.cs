@@ -19,9 +19,15 @@ public class FullMeshCreator : MonoBehaviour {
         print("Building Prefab Model...");
 
         FLATData.InitFlat();
-        //FLATData.FlatRes cortexData = FLATData.Query(0f, 0f, 0f, 1750f, 870f, 1750f);
-        FLATData.FlatRes cortexData = FLATData.Query(250f, 1000f, -1669.26f, 1000f, 1895.73f, 3507.66f);
-        
+        System.Diagnostics.Stopwatch watch = System.Diagnostics.Stopwatch.StartNew();
+        FLATData.FlatRes cortexData = FLATData.Query(100f, 100f, 250f, 1000f, 1000f, 1000f);
+        watch.Stop();
+        var elapsedMs = watch.ElapsedMilliseconds;
+        print("Time taken for query in Ms: " + elapsedMs);
+        //FLATData.FlatRes cortexData = FLATData.Query(250f, 1000f, -1669.26f, 1000f, 1895.73f, 3507.66f);
+
+        print("Number verts returned: " + cortexData.numcoords);
+
         //FLATData.FlatRes cortexData = FLATData.Query(0f, 0f, 0f, 300f, 100f, 200f);
         GameObject fullModel = new GameObject();
 
@@ -52,6 +58,8 @@ public class FullMeshCreator : MonoBehaviour {
         print("Max: " + max.ToString());
 
         int vertexCount = cortexVertices.Count;
+        watch.Reset();
+        watch = System.Diagnostics.Stopwatch.StartNew();
         
         int counter = 0;
         if (vertexCount > 0)
@@ -124,8 +132,8 @@ public class FullMeshCreator : MonoBehaviour {
 
                 meshPart.transform.SetParent(fullModel.transform);
 
-                UnityEditor.AssetDatabase.CreateAsset(mesh, "Assets/FullCortexModel/Small/MeshPart_small_" + i.ToString() + ".asset");
-                //UnityEditor.AssetDatabase.CreateAsset(mesh, "Assets/FullCortexModel/Test/MeshPart_test_" + i.ToString() + ".asset");
+                //UnityEditor.AssetDatabase.CreateAsset(mesh, "Assets/FullCortexModel/Small/MeshPart_small_" + i.ToString() + ".asset");
+                UnityEditor.AssetDatabase.CreateAsset(mesh, "Assets/FullCortexModel/Test3/MeshPart_test3_" + i.ToString() + ".asset");
 
 
             }
@@ -141,6 +149,10 @@ public class FullMeshCreator : MonoBehaviour {
             //print("Max x: " + maxX.ToString());
             //print("Max z: " + maxZ.ToString());
         }
+
+        watch.Stop();
+        long elapsedMs2 = watch.ElapsedMilliseconds;
+        print("Model Build time in Ms: " + elapsedMs2);
 
 
     }
