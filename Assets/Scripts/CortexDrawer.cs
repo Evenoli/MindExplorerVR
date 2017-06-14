@@ -84,14 +84,6 @@ public class CortexDrawer : MonoBehaviour {
         // Init mesh model list and add pre-loaded mesh parts to it
         m_MeshModelParts = new List<GameObject>();
 
-        print("Initialising Flat manager...");
-        bool InitSuccess = FLATData.InitFlat();
-        if(!InitSuccess)
-        {
-            print("Flat Object failed to initialise!");
-            return;
-        }
-
         m_queryInProgress = false;
         m_QueryShown = false;
 
@@ -186,8 +178,6 @@ public class CortexDrawer : MonoBehaviour {
 
             m_curBottomQueryCorner = new Vector3(p0, p1, p2);
             m_curUpperQueryCorner = new Vector3(p3, p4, p5);
-            print("Query lower: " + m_curBottomQueryCorner.ToString());
-            print("Query Top: " + m_curUpperQueryCorner.ToString());
             m_QueryCenter = (m_curUpperQueryCorner + m_curBottomQueryCorner) / 2;
             m_queryThread = new Thread(() => QueryThread(p0, p1, p2, p3, p4, p5));
             m_queryThread.Start();

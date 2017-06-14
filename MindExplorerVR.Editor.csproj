@@ -161,6 +161,8 @@
     <None Include="Assets\SteamVR\Resources\SteamVR_Fade.shader" />
     <None Include="Assets\SteamVR\Resources\SteamVR_SphericalProjection.shader" />
     <None Include="Assets\SteamVR\readme.txt" />
+    <None Include="Assets\StreamingAssets\neocortex_s.txt" />
+    <None Include="Assets\StreamingAssets\neocortex_s_adj.txt" />
     <None Include="Assets\VRArcTeleporter\Materials\ArcShader.shader" />
     <None Include="Assets\VRArcTeleporter\readme.txt" />
   </ItemGroup>

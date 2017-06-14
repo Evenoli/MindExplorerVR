@@ -17,7 +17,6 @@ public class FullMeshCreator : MonoBehaviour {
 
         print("Building Prefab Model...");
 
-        FLATData.InitFlat();
         System.Diagnostics.Stopwatch watch = System.Diagnostics.Stopwatch.StartNew();
         FLATData.FlatRes cortexData = FLATData.Query(100f, 100f, 250f, 1000f, 1000f, 1000f);
         watch.Stop();

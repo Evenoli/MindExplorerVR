@@ -5,7 +5,13 @@ using System.Threading;
 using System.Runtime.InteropServices;
 using System;
 using System.IO;
-
+#if UNITY_EDITOR_32
+using UnityEditor;
+[InitializeOnLoad]
+#elif UNITY_EDITOR_64
+using UnityEditor;
+[InitializeOnLoad]
+#endif
 public static class FLATData {
 
     public struct FlatRes
@@ -42,17 +48,11 @@ public static class FLATData {
     }
 
     [DllImport("FLATDLL2")]
-    private static extern bool InitFlatManager();
-
-    [DllImport("FLATDLL2")]
     private static extern bool PerformQuery(ref IntPtr ptrResVerts, ref int resVertsLen, 
         float p0, float p1, float p2, float p3, float p4, float p5);
 
-    // Used to initialise the FlatManager object in the dll. Should be called before Query.
-    public static bool InitFlat()
-    {
-        return InitFlatManager();
-    }
+    [DllImport("FLATDLL2")]
+    private static extern bool DeleteFlatManager();
 
     public static FlatRes Query(float p0, float p1, float p2, float p3, float p4, float p5)
     {
@@ -71,6 +71,9 @@ public static class FLATData {
 
             Marshal.Copy(ptrResVerts, r.coords, 0, resVertsLen);
         }
+
+        //Clear memory in from DLL call
+        DeleteFlatManager();
 
         return r; 
     }

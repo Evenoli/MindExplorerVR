@@ -84,7 +84,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\FPSDisplay.cs" />
     <Compile Include="Assets\NewtonVR\CollisionSoundFramework\NVRCollisionSoundController.cs" />
     <Compile Include="Assets\NewtonVR\CollisionSoundFramework\NVRCollisionSoundMaterials.cs" />
     <Compile Include="Assets\NewtonVR\CollisionSoundFramework\NVRCollisionSoundObject.cs" />
@@ -146,10 +145,13 @@
     <Compile Include="Assets\Scripts\CortexDrawer.cs" />
     <Compile Include="Assets\Scripts\Display.cs" />
     <Compile Include="Assets\Scripts\FLATData.cs" />
+    <Compile Include="Assets\Scripts\FPSDisplay.cs" />
     <Compile Include="Assets\Scripts\Flash.cs" />
     <Compile Include="Assets\Scripts\FullLineModelRenderer.cs" />
     <Compile Include="Assets\Scripts\FullMeshCreator.cs" />
     <Compile Include="Assets\Scripts\HandModelManager.cs" />
+    <Compile Include="Assets\Scripts\HelpMenuButton.cs" />
+    <Compile Include="Assets\Scripts\HelpMenuManager.cs" />
     <Compile Include="Assets\Scripts\LineGrouper.cs" />
     <Compile Include="Assets\Scripts\LineModelReader.cs" />
     <Compile Include="Assets\Scripts\MenuButton.cs" />
@@ -162,6 +164,7 @@
     <Compile Include="Assets\Scripts\ResetButton.cs" />
     <Compile Include="Assets\Scripts\SliderButton.cs" />
     <Compile Include="Assets\Scripts\TestInterface.cs" />
+    <Compile Include="Assets\Scripts\TestSuite.cs" />
     <Compile Include="Assets\Scripts\VertexManager.cs" />
     <Compile Include="Assets\SteamVR\Extras\SteamVR_GazeTracker.cs" />
     <Compile Include="Assets\SteamVR\Extras\SteamVR_LaserPointer.cs" />
@@ -265,7 +268,6 @@
     <Compile Include="Assets\SteamVR\Scripts\SteamVR_TrackedObject.cs" />
     <Compile Include="Assets\SteamVR\Scripts\SteamVR_UpdatePoses.cs" />
     <Compile Include="Assets\SteamVR\Scripts\SteamVR_Utils.cs" />
-    <Compile Include="Assets\TestSuite.cs" />
     <Compile Include="Assets\VRArcTeleporter\Scripts\ArcTeleporter.cs" />
     <Compile Include="Assets\VRInteraction\Scripts\VRInput.cs" />
   </ItemGroup>
@@ -295,6 +297,8 @@
     <None Include="Assets\SteamVR\Resources\SteamVR_Fade.shader" />
     <None Include="Assets\SteamVR\Resources\SteamVR_SphericalProjection.shader" />
     <None Include="Assets\SteamVR\readme.txt" />
+    <None Include="Assets\StreamingAssets\neocortex_s.txt" />
+    <None Include="Assets\StreamingAssets\neocortex_s_adj.txt" />
     <None Include="Assets\VRArcTeleporter\Materials\ArcShader.shader" />
     <None Include="Assets\VRArcTeleporter\readme.txt" />
   </ItemGroup>
